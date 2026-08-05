@@ -2418,7 +2418,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function afterJellies(){
     if(S.over) return;
-    if(S.frozen){
+    if(S.frozen && !S.recovering){
       // Stay frozen through the ENTIRE lost turn (pirates + jellies).
       // The flag clears only when control returns to the player in startPlayerTurn().
       S.recovering=true;
