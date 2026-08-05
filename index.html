@@ -1335,8 +1335,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       enchant:null,
       pendingContinue:null,
       over:false,
-      frozen:false,
-      recovering:false,
+      turnsToSkip:0,
       jellySteps:JELLY_BASE_STEPS,
       jellyAgitated:false,
       pearl:'none',        // 'none' | 'ready' | 'used'
@@ -1475,7 +1474,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const mc=$('cell-'+S.mer.row+S.mer.col);
     const m=document.createElement('div'); m.className='piece mer'; m.id='merPiece';
     m.innerHTML='<span class="merFloat"><img class="merImg" src="'+playerImg()+'" alt="mermaid"></span>'; mc.appendChild(m);
-    if(S.frozen) m.classList.add('stungGlow');
+    if(S.turnsToSkip>0) m.classList.add('stungGlow');
     (S.jellies||[]).forEach(j=>{
       if(j.col===null) return;
       const jc=$('cell-'+j.row+j.col); if(!jc) return;
@@ -1761,7 +1760,6 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   function startPlayerTurn(){
-    if(S.recovering){ S.frozen=false; S.recovering=false; render(); }
     if(S.over) return;
     S.phase='chooseAction';
     const ch=chestAt(S.mer.row,S.mer.col);
@@ -1996,7 +1994,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       startDigRoll(ch);
       return;
     }
-    if(row==='W1' && !S.frozen){
+    if(row==='W1' && S.turnsToSkip===0){
       const near=S.pirates.find(p=>!p.captured && PATH[p.pathIdx]==='O'+col);
       if(near){
         promptEnchant(near, ()=>endPlayerAction(400));
@@ -2299,7 +2297,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       }
       if(S.mer.row==='W1' && pos==='O'+S.mer.col){
         setTimeout(()=>{
-          if(S.frozen){
+          if(S.turnsToSkip>0){
             log('🪼 '+p.name+' passed right above you, but you\'re too stunned to sing!');
             showNotice(
               '🪼 Too stunned to sing!',
@@ -2396,13 +2394,13 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   function checkSting(j){
-    if(S.frozen || S.over) return false;
+    if(S.turnsToSkip>0 || S.over) return false;
     if(S.mer.row===j.row && S.mer.col===j.col){ stingPlayer(); return true; }
     return false;
   }
 
   function stingPlayer(){
-    S.frozen=true;
+    S.turnsToSkip=1;   // number of full turns the player must still skip
     SFX.sting();
     render();
     log('🪼 A jellyfish stung you! You lose a turn recovering.');
@@ -2412,21 +2410,26 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       '🪼 Oh no — jellyfish sting!',
       '<img class="popImg" src="'+IMG_JELLY+'">',
       'Stay still to recover.<br><span class="warnLine">Lose <b>1</b> turn</span>',
-      ()=>setTimeout(afterJellies,200)   // resume only after dismissal
+      ()=>setTimeout(runSkippedTurn,200)   // resume only after dismissal
     );
+  }
+
+  function runSkippedTurn(){
+    // Stay frozen through the ENTIRE skipped turn (pirates + jellies).
+    // S.turnsToSkip only decrements once, in afterJellies(), once this round finishes.
+    if(S.over) return;
+    render();
+    setDice('Recovering… pirates move!', true);
+    log('😵 You stay still, recovering from the sting.');
+    setTimeout(pirateTurn, 700);   // lost turn: pirates + jellies go again
   }
 
   function afterJellies(){
     if(S.over) return;
-    if(S.frozen && !S.recovering){
-      // Stay frozen through the ENTIRE lost turn (pirates + jellies).
-      // The flag clears only when control returns to the player in startPlayerTurn().
-      S.recovering=true;
+    if(S.turnsToSkip>0){
+      S.turnsToSkip--;
+      if(S.turnsToSkip>0){ runSkippedTurn(); return; }   // more turns owed (e.g. stronger stings)
       render();
-      setDice('Recovering… pirates move!', true);
-      log('😵 You stay still, recovering from the sting.');
-      setTimeout(pirateTurn, 700);   // lost turn: pirates + jellies go again
-      return;
     }
     startPlayerTurn();
   }
