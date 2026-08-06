@@ -104,6 +104,9 @@
   .chestBox .band{position:absolute; top:2px; bottom:1px; left:50%; transform:translateX(-50%); width:6px; background:var(--gold); border:1px solid #B8933E; border-radius:2px; z-index:2;}
   .chestBox .lock{position:absolute; top:8px; left:50%; transform:translateX(-50%); width:8px; height:7px; background:var(--gold); border:1.5px solid #B8933E; border-radius:2px; z-index:3;}
   .chestCost{position:absolute; bottom:2px; right:4px; font-size:10px; font-weight:700; font-family:'Fredoka',sans-serif; background:#fff; border-radius:6px; padding:0 4px; border:1.5px solid var(--sand-deep);}
+  .shovelIcon{height:1.43em; vertical-align:-0.24em;}
+  .inlineIcon{height:1.15em; vertical-align:-0.17em;}
+  .shovelIconSmall{height:11px; vertical-align:-2px;}
   .shellTag{position:absolute; bottom:1px; left:4px; font-size:9px; font-weight:700; opacity:.85; background:rgba(255,255,255,.75); border-radius:5px; padding:0 3px; z-index:4;}
   .cell.shellCell::before{
     content:''; position:absolute; inset:-14% -12% -10% -12%;
@@ -469,6 +472,7 @@
   .cell .arrow{font-size:9px;}
   .shellTag{font-size:7.5px;}
   .chestCost{font-size:8.5px; padding:0 3px;}
+  .shovelIconSmall{height:9px; vertical-align:-1.5px;}
   .chestBox{transform:scale(.82);}
   .piece{font-size:15px;} .piece.mer{font-size:19px;}
   .pirChar{transform:scale(.66); margin-top:-4px;}
@@ -936,7 +940,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   <div class="popup">
     <h2>You're on a treasure chest!</h2>
     <p id="digChoiceText"></p>
-    <button class="btn coral" id="chooseDig">⛏️ Roll to dig</button>
+    <button class="btn coral" id="chooseDig"><img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Roll to dig</button>
     <button class="btn" id="chooseMove">🐚 Keep moving</button>
   </div>
 </div>
@@ -954,7 +958,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 <!-- Dig roll popup -->
 <div class="overlay hidden" id="digRollOverlay">
   <div class="popup">
-    <h2>⛏️ Dig for treasure!</h2>
+    <h2><img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Dig for treasure!</h2>
     <p id="digRollText"></p>
     <div class="big" id="digDie">🎲</div>
     <p id="digResult"></p>
@@ -1269,9 +1273,11 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const COLS = 8;
   const ROWS_DEF = ['R','O','W1','W2','W3'];
   const SHELL = {row:'W3', col:1};
+  const IMG_PERFUME='assets/img/perfume-bottle.png';
+  const PERFUME_ICON='<img class="inlineIcon" src="'+IMG_PERFUME+'" alt="perfume">';
   const ITEMS = {
     necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:'💎'},
-    perfume: {item:'perfume',  name:'Perfume',  power:'Smell',   emoji:'🌺'},
+    perfume: {item:'perfume',  name:'Perfume',  power:'Smell',   emoji:PERFUME_ICON},
     flute:   {item:'flute',    name:'Flute',    power:'Music',   emoji:'🎶'},
     decoy:   {item:null,       name:'Kitchen Utensils', power:null, emoji:'🍴'},
     cannon:  {item:null,       name:'Cannonballs', power:null, emoji:'💣'},
@@ -1297,7 +1303,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   const PIRATE_DEFS = [
     {id:0, name:'Pirate Fitch', weakness:'Music',   item:'flute',   gull:2, emoji:'🎶', start:0},
-    {id:1, name:'Pirate Grum',  weakness:'Smell',   item:'perfume', gull:2, emoji:'🌺', start:6},
+    {id:1, name:'Pirate Grum',  weakness:'Smell',   item:'perfume', gull:2, emoji:PERFUME_ICON, start:6},
     {id:2, name:'Pirate Bobble',weakness:'Sparkle', item:'necklace',gull:2, emoji:'💎', start:11},
   ];
   // Level 3 adds a 4th pirate who loves apple pie (a crafted enchantment)
@@ -1467,7 +1473,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         const cell=$('cell-'+ch.row+ch.col);
         const em=document.createElement('div'); em.className='chestEmoji';
         em.innerHTML='<div class="chestBox"><div class="lid"></div><div class="base"></div><div class="band"></div><div class="lock"></div></div>';
-        const cost=document.createElement('div'); cost.className='chestCost'; cost.textContent='⛏️'+ch.cost+'+';
+        const cost=document.createElement('div'); cost.className='chestCost'; cost.innerHTML='<img class="shovelIconSmall" src="assets/img/Shovel.png" alt="dig">'+ch.cost+'+';
         cell.appendChild(em); cell.appendChild(cost);
       }
     });
@@ -1534,7 +1540,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       pl.appendChild(row);
     });
     const inv=$('inv'); inv.innerHTML='';
-    const powers=[['flute','🎶','Music'],['perfume','🌺','Smell'],['necklace','💎','Sparkle']];
+    const powers=[['flute','🎶','Music'],['perfume',PERFUME_ICON,'Smell'],['necklace','💎','Sparkle']];
     // Level 3: apple pie is a 4th enchantment, shown once crafted
     if(curLevel===3) powers.push(['applepie','🥧','Apple Pie']);
     powers.forEach(([k,e,label])=>{
@@ -1578,12 +1584,12 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   function log(msg){
-    const p=document.createElement('p'); p.textContent=msg;
+    const p=document.createElement('p'); p.innerHTML=msg;
     $('log').appendChild(p);
     // if the story popup is open, mirror in and keep it pinned to newest (bottom)
     const sc=$('storyScroll');
     if(sc && !$('storyLogOverlay').classList.contains('hidden')){
-      const p2=document.createElement('p'); p2.textContent=msg;
+      const p2=document.createElement('p'); p2.innerHTML=msg;
       sc.appendChild(p2); sc.scrollTop=sc.scrollHeight;
     }
   }
@@ -1831,7 +1837,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       ch.opened=true;
       if(ch.key==='cannon'){
         SFX.sink();
-        log('⛏️ Rolled '+d.roll+' — a chest of cannonballs! They sink straight out of sight. 💣');
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — a chest of cannonballs! They sink straight out of sight. 💣');
         render();
         showNotice(
           '💣 Cannonballs!',
@@ -1842,7 +1848,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         return;
       }
       if(ch.key==='decoy'){
-        log('⛏️ Rolled '+d.roll+' — you dug up… old kitchen utensils?! 🍴');
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you dug up… old kitchen utensils?! 🍴');
         render();
         showNotice(
           '🍴 Kitchen utensils?!',
@@ -1854,7 +1860,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       }
       if(ch.key==='utensils'){
         S.utensils='have'; render();
-        log('⛏️ Rolled '+d.roll+' — you found kitchen utensils! 🍴');
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found kitchen utensils! 🍴');
         if(S.ingredients==='have'){
           showNotice(
             '🍴 Kitchen utensils!',
@@ -1875,7 +1881,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       }
       if(ch.key==='ingredients'){
         S.ingredients='have'; render();
-        log('⛏️ Rolled '+d.roll+' — you found apple pie ingredients! 🍎');
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found apple pie ingredients! 🍎');
         if(S.utensils==='have'){
           showNotice(
             '🍎 Apple pie ingredients!',
@@ -1898,7 +1904,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       const cellEl=$('cell-'+ch.row+ch.col);
       const fromRect=cellEl.getBoundingClientRect();
       S.inventory[ch.item]=true;
-      log('⛏️ Rolled '+d.roll+' — you dug up the '+ch.name+'! ('+ch.power+' power)');
+      log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you dug up the '+ch.name+'! ('+ch.power+' power)');
       render();
       const slot=$('slot-'+ch.item);
       slot.style.visibility='hidden';
@@ -1917,7 +1923,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         );
       });
     } else {
-      log('⛏️ Rolled '+d.roll+' — not enough to open the chest (need '+d.ch.cost+'+). Try again next turn!');
+      log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — not enough to open the chest (need '+d.ch.cost+'+). Try again next turn!');
       endPlayerAction(400);
     }
   });
