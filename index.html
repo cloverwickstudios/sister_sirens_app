@@ -1275,8 +1275,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const SHELL = {row:'W3', col:1};
   const IMG_PERFUME='assets/img/perfume-bottle.png';
   const PERFUME_ICON='<img class="inlineIcon" src="'+IMG_PERFUME+'" alt="perfume">';
+  const IMG_DIAMOND='assets/img/diamond.png';
+  const DIAMOND_ICON='<img class="inlineIcon" src="'+IMG_DIAMOND+'" alt="diamond">';
   const ITEMS = {
-    necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:'💎'},
+    necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:DIAMOND_ICON},
     perfume: {item:'perfume',  name:'Perfume',  power:'Smell',   emoji:PERFUME_ICON},
     flute:   {item:'flute',    name:'Flute',    power:'Music',   emoji:'🎶'},
     decoy:   {item:null,       name:'Kitchen Utensils', power:null, emoji:'🍴'},
@@ -1304,7 +1306,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const PIRATE_DEFS = [
     {id:0, name:'Pirate Fitch', weakness:'Music',   item:'flute',   gull:2, emoji:'🎶', start:0},
     {id:1, name:'Pirate Grum',  weakness:'Smell',   item:'perfume', gull:2, emoji:PERFUME_ICON, start:6},
-    {id:2, name:'Pirate Bobble',weakness:'Sparkle', item:'necklace',gull:2, emoji:'💎', start:11},
+    {id:2, name:'Pirate Bobble',weakness:'Sparkle', item:'necklace',gull:2, emoji:DIAMOND_ICON, start:11},
   ];
   // Level 3 adds a 4th pirate who loves apple pie (a crafted enchantment)
   const PIRATE_DEF_PIE = {id:3, name:'Pirate Crumb', weakness:'Apple Pie', item:'applepie', gull:2, emoji:'🥧', start:3};
@@ -1540,7 +1542,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       pl.appendChild(row);
     });
     const inv=$('inv'); inv.innerHTML='';
-    const powers=[['flute','🎶','Music'],['perfume',PERFUME_ICON,'Smell'],['necklace','💎','Sparkle']];
+    const powers=[['flute','🎶','Music'],['perfume',PERFUME_ICON,'Smell'],['necklace',DIAMOND_ICON,'Sparkle']];
     // Level 3: apple pie is a 4th enchantment, shown once crafted
     if(curLevel===3) powers.push(['applepie','🥧','Apple Pie']);
     powers.forEach(([k,e,label])=>{
