@@ -1450,6 +1450,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       pearl:'none',        // 'none' | 'ready' | 'used'
       jellyFrozen:false,   // jellyfish skip their next move
       extraTurn:false,
+      skipChestPrompt:false,
       pearlGiven:false,
       jellyTick:0,
       jellies:LEVELS[curLevel].jellies ? [
@@ -1931,7 +1932,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function startPlayerTurn(){
     if(S.over) return;
     S.phase='chooseAction';
-    const ch=chestAt(S.mer.row,S.mer.col);
+    const skipChest=S.skipChestPrompt; S.skipChestPrompt=false;
+    const ch=skipChest?null:chestAt(S.mer.row,S.mer.col);
     if(ch){
       $('digChoiceText').innerHTML='A mysterious treasure is buried here. You need a <b>'+ch.cost+'</b>'+(ch.cost>=6?'':' or higher')+' to dig it up and see what\'s inside — or you can swim on.';
       $('digChoiceOverlay').classList.remove('hidden');
@@ -2189,8 +2191,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(S.inventory.driedmeat){
       distractShark(()=>{
         S.extraTurn=true;
+        S.skipChestPrompt=true;   // even if the shark was on a chest tile, this bonus turn is escape-only
         updateExtraBadge();
-        afterMermaidMove();
+        endPlayerAction(400);
       });
     } else {
       sharkBite();
@@ -2307,12 +2310,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function resolveEnchantAttempt(p){
     if(!S.inventory[p.item]){
-      const itemDef=ITEMS[p.item];
       log('💨 You try to charm '+p.name+'… but he marches on, unimpressed.');
+      const bodyText = p.item==='magicnecklace'
+        ? 'He mumbles something about his favorite necklace… stolen by a shark, if you can believe it!'
+        : 'Keep collecting treasures to increase your charms. Remember — '+p.name+' likes '+ITEMS[p.item].name.toLowerCase()+' ('+p.weakness.toLowerCase()+')!';
       showNotice(
         'Nice try! 😉',
         '💨'+p.emoji,
-        'Keep collecting treasures to increase your charms. Remember — '+p.name+' likes '+itemDef.name.toLowerCase()+' ('+p.weakness.toLowerCase()+')!',
+        bodyText,
         ()=>{
           const cont=S.pendingContinue; S.pendingContinue=null;
           cont && cont();
