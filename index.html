@@ -724,11 +724,22 @@
     0%,100%{filter:drop-shadow(0 0 5px rgba(255,90,180,.95)) drop-shadow(0 0 14px rgba(255,140,205,.8));}
     50%    {filter:drop-shadow(0 0 12px rgba(255,60,170,1)) drop-shadow(0 0 26px rgba(255,170,220,.95)) brightness(1.2);}
   }
-  /* carrying dried meat: slow yellow glow */
+  /* carrying dried meat: slow yellow glow behind the mermaid */
   .piece.mer.meatGlow{animation:meatPulse 1.8s ease-in-out infinite;}
+  .piece.mer.meatGlow::before{
+    content:''; position:absolute; left:50%; top:50%;
+    width:150%; height:150%; transform:translate(-50%,-50%);
+    border-radius:50%; z-index:-1; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,215,60,.9) 0%, rgba(255,225,120,.5) 45%, rgba(255,225,120,0) 75%);
+    animation:meatGlowBlob 1.8s ease-in-out infinite;
+  }
   @keyframes meatPulse{
     0%,100%{filter:drop-shadow(0 0 5px rgba(255,210,60,.85)) drop-shadow(0 0 12px rgba(255,225,120,.6));}
     50%    {filter:drop-shadow(0 0 10px rgba(255,200,40,1)) drop-shadow(0 0 22px rgba(255,220,110,.85)) brightness(1.1);}
+  }
+  @keyframes meatGlowBlob{
+    0%,100%{opacity:.55; transform:translate(-50%,-50%) scale(.88);}
+    50%    {opacity:1; transform:translate(-50%,-50%) scale(1.1);}
   }
 
   /* ---------- CORAL COVE (level 2) PALETTE ---------- */
