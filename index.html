@@ -2605,11 +2605,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(S.mer.row==='W1' && pos==='O'+S.mer.col){
         setTimeout(()=>{
           if(S.turnsToSkip>0){
-            log('🪼 '+p.name+' passed right above you, but you\'re too stunned to sing!');
+            const isL4=curLevel===4;
+            const stunIcon=isL4?(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE):IMG_JELLY;
+            const stunCause=isL4?'shark bite':'jellyfish sting';
+            log((isL4?'🦈 ':'🪼 ')+p.name+' passed right above you, but you\'re too stunned to sing!');
             showNotice(
-              '🪼 Too stunned to sing!',
-              '<span class="popArt"><img class="popImg" src="'+IMG_JELLY+'"></span>',
-              p.name+' moved to the tile right above you — but the jellyfish sting has you frozen, so you can\'t move or enchant like this.'
+              (isL4?'🦈':'🪼')+' Too stunned to sing!',
+              '<span class="popArt"><img class="popImg" src="'+stunIcon+'"></span>',
+              p.name+' moved to the tile right above you — but the '+stunCause+' has you frozen, so you can\'t move or enchant like this.'
               +'<br><span class="stungNote">Wait until your next turn, then try to catch up to him!</span>',
               ()=>movePirate(p, stepsLeft-1, events)
             );
