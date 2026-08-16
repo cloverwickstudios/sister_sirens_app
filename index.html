@@ -701,7 +701,7 @@
   }
   .piece.shark img{
     width:100%; height:100%; object-fit:contain;
-    filter:drop-shadow(0 3px 5px rgba(10,30,50,.45));
+    filter:drop-shadow(0 3px 5px rgba(10,30,50,.45)) drop-shadow(0 0 7px rgba(255,255,255,.3));
   }
   /* float up and down in the current */
   @keyframes jellyBob{
@@ -1323,6 +1323,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const SHELL = {row:'W3', col:1};
   const IMG_PERFUME='assets/img/perfume-bottle.png';
   const PERFUME_ICON='<img class="perfumeIcon" src="'+IMG_PERFUME+'" alt="perfume">';
+  const IMG_FLUTE='assets/img/flute.png';
+  const FLUTE_ICON='<img class="inlineIcon" src="'+IMG_FLUTE+'" alt="flute">';
   const IMG_DIAMOND='assets/img/diamond.png';
   const DIAMOND_ICON='<img class="inlineIcon" src="'+IMG_DIAMOND+'" alt="diamond">';
   const IMG_SHARK_NECKLACE='assets/img/shark-necklace.png';
@@ -1335,7 +1337,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const ITEMS = {
     necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:DIAMOND_ICON},
     perfume: {item:'perfume',  name:'Perfume',  power:'Smell',   emoji:PERFUME_ICON},
-    flute:   {item:'flute',    name:'Flute',    power:'Music',   emoji:'🎶'},
+    flute:   {item:'flute',    name:'Flute',    power:'Music',   emoji:FLUTE_ICON},
     decoy:   {item:null,       name:'Kitchen Utensils', power:null, emoji:'🍴'},
     cannon:  {item:null,       name:'Cannonballs', power:null, emoji:'💣'},
     utensils:{item:'utensils', name:'Kitchen Utensils', power:null, emoji:'🍴'},
@@ -1366,7 +1368,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const TREESQUARE='O'+COLS, XSQUARE='R1';
 
   const PIRATE_DEFS = [
-    {id:0, name:'Pirate Fitch', weakness:'Music',   item:'flute',   gull:2, emoji:'🎶', start:0},
+    {id:0, name:'Pirate Fitch', weakness:'Music',   item:'flute',   gull:2, emoji:FLUTE_ICON, start:0},
     {id:1, name:'Pirate Grum',  weakness:'Smell',   item:'perfume', gull:2, emoji:PERFUME_ICON, start:6},
     {id:2, name:'Pirate Bobble',weakness:'Sparkle', item:'necklace',gull:2, emoji:DIAMOND_ICON, start:11},
   ];
@@ -1629,7 +1631,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       pl.appendChild(row);
     });
     const inv=$('inv'); inv.innerHTML='';
-    const powers=[['flute','🎶','Music'],['perfume',PERFUME_ICON,'Smell'],['necklace',DIAMOND_ICON,'Sparkle']];
+    const powers=[['flute',FLUTE_ICON,'Music'],['perfume',PERFUME_ICON,'Smell'],['necklace',DIAMOND_ICON,'Sparkle']];
     // Level 3: apple pie is a 4th enchantment, shown once crafted
     if(curLevel===3) powers.push(['applepie','🥧','Apple Pie']);
     // Level 4: plum pie (crafted) and the shark's magic necklace (tamed) are extra enchantments
