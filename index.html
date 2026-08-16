@@ -752,6 +752,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   /* moonlight glints on the water */
   /* moonlight glints now painted into the Pearl Cove art */
 
+  /* ---------- SEASHELL COVE (level 4) SUNRISE PALETTE ---------- */
+  body.seashellCove{
+    background:linear-gradient(180deg,
+      #FFB88C 0%, #FF9E7D 22%, #FF7E8A 46%, #E86A9A 68%, #B4569E 86%, #7C4B9E 100%) !important;
+  }
+  body.seashellCove .boardWrap{background-image:url('assets/img/bg-board-sunrise.png');}
+  body.seashellCove .boardWrap{background-position:center -36px !important; background-size:cover;}
+  body.seashellCove .laneR, body.seashellCove .laneO{background:rgba(255,220,180,.30); border-color:rgba(220,170,120,.55);}
+  body.seashellCove .cell.treesq{background:rgba(255,180,170,.32); border-color:rgba(220,140,130,.55);}
+  body.seashellCove .cell.xsquare{background:rgba(255,150,180,.36); border-color:rgba(220,110,150,.6);}
+  body.seashellCove .laneW1{background:rgba(255,190,160,.26); border-color:rgba(230,150,120,.5);}
+  body.seashellCove .laneW2{background:rgba(255,160,170,.26); border-color:rgba(225,120,140,.5);}
+  body.seashellCove .laneW3{background:rgba(230,130,175,.28); border-color:rgba(200,95,150,.55);}
+  body.seashellCove .cell .tag, body.seashellCove .shellTag{background:rgba(255,255,255,.85);}
+  body.seashellCove .deco.trees{filter:hue-rotate(-8deg) brightness(1.05) saturate(1.05);}
+  body.seashellCove .deco.ship{filter:brightness(1.02) saturate(1.05);}
+
   /* tunnel home tile */
   .cell.tunnelCell::before{
     content:''; position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
@@ -801,7 +818,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#resumeBtn.goldBtn.pressed{animation:none;}
 
   /* TEMP DEBUG BUTTON — remove before release */
-  button#debugL2.debugBtn, button#debugL3.debugBtn{
+  button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn{
     position:absolute; bottom:5%;
     font-family:'Quicksand',sans-serif; font-size:12px; font-weight:700;
     color:#3A4A55; background:rgba(255,255,255,.82); border:2px dashed #7C8B96;
@@ -810,9 +827,11 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
   button#debugL2.debugBtn{left:50%; transform:translateX(-104%);}
   button#debugL3.debugBtn{left:50%; transform:translateX(4%);}
+  button#debugL4.debugBtn{left:50%; transform:translateX(112%);}
   button#debugL2.debugBtn:active{transform:translateX(-104%) scale(.93) !important;}
   button#debugL3.debugBtn:active{transform:translateX(4%) scale(.93) !important;}
-  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed{animation:none;}
+  button#debugL4.debugBtn:active{transform:translateX(112%) scale(.93) !important;}
+  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed{animation:none;}
 
   /* ---------- MAGIC PEARL CARD ---------- */
   .slot.pearlSlot{position:relative; overflow:hidden;}
@@ -895,6 +914,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   -->
   <button class="btn debugBtn" id="debugL2">🐞 Jump to Level 2</button>
   <button class="btn debugBtn" id="debugL3">🐞 Jump to Level 3</button>
+  <button class="btn debugBtn" id="debugL4">🐞 Jump to Level 4</button>
 </div>
 
 
@@ -1624,6 +1644,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     1:{name:'Sunset Shore', home:'shell', jellies:false},
     2:{name:'Coral Cove',   home:'tunnel', jellies:true},
     3:{name:'Pearl Cove',   home:'tunnel', jellies:false},
+    4:{name:'Seashell Cove',home:'shell', jellies:false},
   };
   const JELLY_BASE_STEPS=2, JELLY_FAST_STEPS=3;
   let curLevel=1, playerSprite=null, savedGame=null;
@@ -2478,10 +2499,12 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
     } else {
+      savedGame={stage:'sister4Message'};
+      persistSave();
       $('endTitle').textContent='Another sister is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER4+'">';
-      $('endText').innerHTML='You cleared Pearl Cove and freed your sister!<br><br><b class="beginLine">More coves await… (To be continued!)</b>';
-      $('restart').classList.add('hidden');
+      $('endText').innerHTML='You cleared Pearl Cove and freed your sister!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
+      $('restart').classList.remove('hidden'); $('restart').textContent='Hear her message';
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
     }
@@ -2499,6 +2522,37 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       +'<b class="beginLine">Let\'s go save her too!</b>',
       ()=>startLevel3(),
       "Let's go!"
+    );
+  }
+
+  // ---------- SISTER FOUR'S MESSAGE (Level 3 -> 4) ----------
+  function showSister4Message(){
+    $('endOverlay').classList.add('hidden');
+    showNotice(
+      "💚 Sister Four's message",
+      '<span class="popArt"><img class="popImg" src="'+IMG_SISTER4+'"><img class="popImg" src="'+IMG_GRUMPYCAT+'"></span>',
+      'Thank you for finding me! This is my cat, <b>Furbles</b> — he heard the last mermaid is being held at '
+      +'<b>Seashell Cove</b>, and he can show you the way.<br><br>'
+      +"Just be quiet… he's still sleepy, and a little grumpy.",
+      ()=>startLevel4()
+    );
+  }
+
+  function startLevel4(){
+    playerSprite='player';
+    curLevel=4;
+    savedGame={stage:'level4'};
+    persistSave();
+    document.body.classList.remove('pearlCove');
+    document.body.classList.add('seashellCove');
+    init();
+    showNotice(
+      '🐱 Furbles the cat',
+      '<span class="popArt"><img class="popImg" src="'+IMG_GRUMPYCAT+'"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+      '(He grumbles quietly and points a paw at the wreck.) Your last sister is on that ship — capture the pirates '
+      +'and free her before they finish repairs.<br><br>'
+      +'<b class="beginLine">Roll the dice to begin!</b>',
+      ()=>startPlayerTurn()
     );
   }
 
@@ -2540,7 +2594,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const SISTER_ROSTER = [
     {level:1, name:'Sister Two',   pet:'Pip',     sisterImg:()=>IMG_SISTER,   petImg:()=>IMG_PIP},
     {level:2, name:'Sister Three', pet:'Biscuit', sisterImg:()=>IMG_SISTER3,  petImg:()=>IMG_BISCUIT},
-    {level:3, name:'Sister Four',  pet:'Whiskers',petImg:()=>IMG_GRUMPYCAT,   sisterImg:()=>IMG_SISTER4},
+    {level:3, name:'Sister Four',  pet:'Furbles', petImg:()=>IMG_GRUMPYCAT,   sisterImg:()=>IMG_SISTER4},
   ];
 
   function openSisterLog(){
@@ -2619,6 +2673,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(S.over && S.pirates.every(p=>p.captured)){
       if(curLevel===1){ showSisterMessage(); return; }
       if(curLevel===2){ showBiscuitMessage(); return; }
+      if(curLevel===3){ showSister4Message(); return; }
     }
     init();
     showIntro();
@@ -2641,6 +2696,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     setTimeout(()=>{ m.style.display='none'; startLevel3(); }, 560);
   });
 
+  // TEMP DEBUG — remove before release
+  $('debugL4').addEventListener('click',()=>{
+    AUDIO.ensureAudio();
+    const m=$('menuScreen');
+    m.classList.add('hide');
+    setTimeout(()=>{ m.style.display='none'; startLevel4(); }, 560);
+  });
+
   /* Resume Saved Game disabled for now
   $('resumeBtn').addEventListener('click',()=>{
     AUDIO.ensureAudio();
@@ -2649,7 +2712,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     m.classList.add('hide');
     setTimeout(()=>{
       m.style.display='none';
-      document.body.classList.remove('coralCove','pearlCove');
+      document.body.classList.remove('coralCove','pearlCove','seashellCove');
       if(savedGame.stage==='level3'){ startLevel3(); }
       else if(savedGame.stage==='biscuitMessage'){ curLevel=2; playerSprite='player'; document.body.classList.add('coralCove'); init(); showBiscuitMessage(); }
       else if(savedGame.stage==='level2'){ startLevel2(); }
@@ -2661,7 +2724,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   $('toMenu').addEventListener('click',()=>{
     $('endOverlay').classList.add('hidden');
     curLevel=1; playerSprite=null;
-    document.body.classList.remove('coralCove','pearlCove');
+    document.body.classList.remove('coralCove','pearlCove','seashellCove');
     init(); // reset the board behind the menu
     const m=$('menuScreen');
     m.style.display='';
@@ -2697,7 +2760,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   $('newGameBtn').addEventListener('click',()=>{
     AUDIO.ensureAudio(); // start the shanty right now, inside this tap
     curLevel=1; playerSprite=null;
-    document.body.classList.remove('coralCove','pearlCove');
+    document.body.classList.remove('coralCove','pearlCove','seashellCove');
     init();
     const m=$('menuScreen');
     m.classList.add('hide');
