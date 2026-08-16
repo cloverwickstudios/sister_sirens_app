@@ -696,7 +696,7 @@
   }
   /* ---------- SHARK (level 4) ---------- */
   .piece.shark{
-    width:200%; height:130%; display:flex; align-items:center; justify-content:center;
+    width:130%; height:130%; display:flex; align-items:center; justify-content:center;
     z-index:6; pointer-events:none; transition:none;
   }
   .piece.shark img{
@@ -1562,8 +1562,6 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       const sc=$('cell-'+S.shark.row+S.shark.col);
       if(sc){
         const el=document.createElement('div'); el.className='piece shark'; el.id='sharkPiece';
-        // Body trails behind the leading tile (sh.col), toward the direction it came from.
-        el.style.left=(S.shark.dir===1)?'-100%':'0';
         el.innerHTML='<img src="'+IMG_SHARK_NECKLACE+'" alt="shark" style="transform:scaleX('+(S.shark.dir===-1?-1:1)+')">';
         sc.appendChild(el);
       }
