@@ -188,6 +188,8 @@
     content:''; position:absolute; top:-3px; right:-6px; width:8px; height:7px;
     background:radial-gradient(circle at 35% 35%,#4CAF6B,#2E8B57); border-radius:50% 50% 50% 15%; z-index:2;
   }
+  /* his sprite otherwise sits flush-left in the tile like other pirates; center him explicitly */
+  #pir-4{ left:50%; margin-left:-14px; }
   .pirChar.walking{animation:bob .3s ease-in-out infinite alternate;}
   .pirChar.walking .leg:first-child{animation:legA .3s ease-in-out infinite alternate;}
   .pirChar.walking .leg:last-child{animation:legB .3s ease-in-out infinite alternate;}
@@ -3065,6 +3067,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       document.body.classList.add('seashellCove');
       init();
       S.pirates.forEach(p=>{ if(!p.dormant) p.captured=true; });
+      S.inventory.magicnecklace=true;   // just for this debug shortcut, to test enchanting him right away
       render();
       revealCaptain(()=>startPlayerTurn());
     }, 560);
