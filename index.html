@@ -2219,20 +2219,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function afterMermaidMove(){
     const {row,col}=S.mer;
-    const ch=chestAt(row,col);
-    if(ch){
-      log('🐚 You found a buried treasure chest!');
-      startDigRoll(ch);
-      return;
+    function proceedToChestOrEnd(){
+      const ch=chestAt(row,col);
+      if(ch){
+        log('🐚 You found a buried treasure chest!');
+        startDigRoll(ch);
+        return;
+      }
+      endPlayerAction(450);
     }
     if(row==='W1' && S.turnsToSkip===0){
       const near=S.pirates.find(p=>!p.captured && PATH[p.pathIdx]==='O'+col);
       if(near){
-        promptEnchant(near, ()=>endPlayerAction(400));
+        promptEnchant(near, proceedToChestOrEnd);
         return;
       }
     }
-    endPlayerAction(450);
+    proceedToChestOrEnd();
   }
 
   // ---------- ENCHANT PROMPT ----------
