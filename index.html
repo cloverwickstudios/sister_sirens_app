@@ -1416,8 +1416,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const isL4 = curLevel===4;
     // In L3/L4 the utensils chest becomes a real keepable item (not a decoy)
     const contents=shuffle(['necklace','perfume','flute', (isL3||isL4)?'utensils':'decoy']);
-    let chests=CHEST_SPOTS.map((s,i)=>({...s, key:contents[i], ...ITEMS[contents[i]], opened:false}))
-        .concat([{...CANNON_SPOT, key:'cannon', ...ITEMS.cannon, opened:false}]);
+    let chests=CHEST_SPOTS.map((s,i)=>({...s, key:contents[i], ...ITEMS[contents[i]], opened:false}));
+    if(!isL4) chests=chests.concat([{...CANNON_SPOT, key:'cannon', ...ITEMS.cannon, opened:false}]);
     if(isL3) chests=chests.concat([{...INGREDIENTS_SPOT, key:'ingredients', ...ITEMS.ingredients, opened:false}]);
     if(isL4) chests=chests.concat([
       {...DRIEDMEAT_SPOT, key:'driedmeat', ...ITEMS.driedmeat, opened:false},
