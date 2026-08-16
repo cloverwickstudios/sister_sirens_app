@@ -2473,8 +2473,11 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                 showNotice(
                   '🏴‍☠️ Captain Feathers',
                   '<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span></span>',
-                  '"WHERE\'S MY CREW???" the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"',
-                  proceed
+                  '<b>"WHERE\'S MY CREW???"</b> the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"<br><br>'
+                  +'A fancy-dressed pirate — clearly the captain himself — emerges from the ship…',
+                  ()=>{
+                    if(captain){ emergeCaptain(captain, proceed); } else { proceed(); }
+                  }
                 );
               } else {
                 proceed();
@@ -2492,6 +2495,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       else { endPlayerAction(500); }
     }
   });
+
+  // ---------- CAPTAIN'S ENTRANCE (Level 4) ----------
+  // A one-off "climbs out of the ship" animation played right after the
+  // reveal popup, before his real per-turn movement kicks in next round.
+  function emergeCaptain(captain, cb){
+    if(tileOccupied(0, captain)){ cb(); return; }
+    captain.inShip=false;
+    captain.pathIdx=0;
+    render();
+    SFX.step('pirate');
+    flashCell(PATH[0]);
+    hopPiece('#pir-'+captain.id);
+    const charEl=document.querySelector('#pir-'+captain.id+' .pirChar');
+    if(charEl) charEl.classList.add('walking');
+    log('🏴‍☠️ '+captain.name+' climbs out of the ship ⚓');
+    setTimeout(cb, STEP_MS+250);
+  }
 
   // ---------- PIRATE TURN ----------
   function tileOccupied(idx, self){
