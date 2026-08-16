@@ -2189,12 +2189,17 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     showNotice(
       '🦈 Shark tamed!',
       '<img class="popImg" src="'+IMG_SHARK_NO_NECKLACE+'">',
-      'The shark takes the dried meat and goes calm! It drops its <b>magic necklace</b> and swims off — the captain won\'t be able to resist it.',
+      'The shark takes the dried meat and goes calm, then swims off into the deep!',
       ()=>{
         S.shark.active=false;
         S.inventory.magicnecklace=true;
         render();
-        resumeFn();
+        showNotice(
+          '✨ Magic necklace!',
+          '<img class="popImg" src="'+IMG_NECKLACE_MAGIC+'">',
+          'The shark left its <b>magic necklace</b> behind! This piece looks like it could win over a very special pirate…',
+          resumeFn
+        );
       }
     );
   }
