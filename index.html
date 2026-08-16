@@ -2177,11 +2177,11 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function checkSharkEncounter(){
     if(curLevel!==4 || !S.shark || !S.shark.active) return false;
     if(S.mer.row!==S.shark.row || S.mer.col!==S.shark.col) return false;
-    if(S.inventory.driedmeat){ tameShark(); } else { sharkChomped(); }
+    if(S.inventory.driedmeat){ tameShark(afterMermaidMove); } else { sharkChomped(); }
     return true;
   }
 
-  function tameShark(){
+  function tameShark(resumeFn){
     S.inventory.driedmeat=false;
     S.shark.tamed=true;
     render();
@@ -2194,7 +2194,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         S.shark.active=false;
         S.inventory.magicnecklace=true;
         render();
-        afterMermaidMove();
+        resumeFn();
       }
     );
   }
@@ -2641,7 +2641,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function checkSharkHit(){
     const sh=S.shark;
     if(!sh || !sh.active || sh.tamed || S.over) return false;
-    if(S.mer.row===sh.row && S.mer.col===sh.col){ sharkChomped(); return true; }
+    if(S.mer.row===sh.row && S.mer.col===sh.col){
+      if(S.inventory.driedmeat){ tameShark(jellyTurn); } else { sharkChomped(); }
+      return true;
+    }
     return false;
   }
 
