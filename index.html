@@ -696,7 +696,7 @@
   }
   /* ---------- SHARK (level 4) ---------- */
   .piece.shark{
-    width:130%; height:130%; display:flex; align-items:center; justify-content:center;
+    width:200%; height:130%; display:flex; align-items:center; justify-content:center;
     z-index:6; pointer-events:none; transition:none;
   }
   .piece.shark img{
@@ -723,6 +723,12 @@
   @keyframes stungPulse{
     0%,100%{filter:drop-shadow(0 0 5px rgba(255,90,180,.95)) drop-shadow(0 0 14px rgba(255,140,205,.8));}
     50%    {filter:drop-shadow(0 0 12px rgba(255,60,170,1)) drop-shadow(0 0 26px rgba(255,170,220,.95)) brightness(1.2);}
+  }
+  /* carrying dried meat: slow yellow glow */
+  .piece.mer.meatGlow{animation:meatPulse 1.8s ease-in-out infinite;}
+  @keyframes meatPulse{
+    0%,100%{filter:drop-shadow(0 0 5px rgba(255,210,60,.85)) drop-shadow(0 0 12px rgba(255,225,120,.6));}
+    50%    {filter:drop-shadow(0 0 10px rgba(255,200,40,1)) drop-shadow(0 0 22px rgba(255,220,110,.85)) brightness(1.1);}
   }
 
   /* ---------- CORAL COVE (level 2) PALETTE ---------- */
@@ -847,6 +853,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   /* apple pie enchantment + held ingredient cards */
   .slot.pieSlot.owned{background:linear-gradient(180deg,#FBEAD2,#F3D6A9); border:2px solid #D9A44E;}
   .pieImg{width:82%; height:auto; object-fit:contain; display:block; filter:drop-shadow(0 1px 2px rgba(120,70,20,.35));}
+  .necklaceCardIcon{height:2em; width:auto; object-fit:contain; display:block; filter:drop-shadow(0 1px 2px rgba(120,90,20,.35));}
   .slot.itemSlot{
     background:linear-gradient(180deg,#FFF4E2,#F6E3C4);
     border:2px dashed #D9A44E;
@@ -1363,7 +1370,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(curLevel===4) return PIRATE_DEFS.concat([PIRATE_DEF_PLUM, PIRATE_DEF_CAPTAIN]);
     return PIRATE_DEFS;
   }
-  const WOOD_GOAL=10, PIRATE_STEPS=3;
+  const PIRATE_STEPS=3;
+  function woodGoal(){ return curLevel===4 ? 14 : 10; }
   const STEP_MS=250;
 
   // ---------- STATE ----------
@@ -1411,7 +1419,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         {id:0, row:'W1', col:null, dir:-1, start:COLS, delay:0},
         {id:1, row:'W3', col:null, dir:+1, start:2,    delay:1},
       ] : [],
-      shark:isL4 ? {row:'W1', col:COLS, dir:-1, tierIdx:0, speed:2, active:true, tamed:false} : null,
+      shark:isL4 ? {row:'W1', col:COLS, dir:-1, tierIdx:0, speed:2, active:true, tamed:false, onscreen:false} : null,
       sharkFast:false,
       captainRevealed:false,
     };
@@ -1542,6 +1550,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const m=document.createElement('div'); m.className='piece mer'; m.id='merPiece';
     m.innerHTML='<span class="merFloat"><img class="merImg" src="'+playerImg()+'" alt="mermaid"></span>'; mc.appendChild(m);
     if(S.turnsToSkip>0) m.classList.add('stungGlow');
+    if(S.inventory.driedmeat) m.classList.add('meatGlow');
     (S.jellies||[]).forEach(j=>{
       if(j.col===null) return;
       const jc=$('cell-'+j.row+j.col); if(!jc) return;
@@ -1549,11 +1558,13 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       el.innerHTML='<img src="'+IMG_JELLY+'" alt="jellyfish">';
       jc.appendChild(el);
     });
-    if(S.shark && S.shark.active){
+    if(S.shark && S.shark.active && S.shark.onscreen){
       const sc=$('cell-'+S.shark.row+S.shark.col);
       if(sc){
         const el=document.createElement('div'); el.className='piece shark'; el.id='sharkPiece';
-        el.innerHTML='<img src="'+IMG_SHARK_NECKLACE+'" alt="shark">';
+        // Body trails behind the leading tile (sh.col), toward the direction it came from.
+        el.style.left=(S.shark.dir===1)?'-100%':'0';
+        el.innerHTML='<img src="'+IMG_SHARK_NECKLACE+'" alt="shark" style="transform:scaleX('+(S.shark.dir===-1?-1:1)+')">';
         sc.appendChild(el);
       }
     }
@@ -1592,10 +1603,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     // Ship repair dock (left, by the ship): a log icon per delivered wood
     const rd=$('repairDock');
     let rdHtml='<h4>Repairs</h4>';
-    for(let i=0;i<WOOD_GOAL;i++){
+    for(let i=0;i<woodGoal();i++){
       rdHtml+='<div class="logIcon '+(i<S.wood?'full':'empty')+'"></div>';
     }
-    rdHtml+='<div class="count">'+S.wood+'/'+WOOD_GOAL+'</div>';
+    rdHtml+='<div class="count">'+S.wood+'/'+woodGoal()+'</div>';
     rd.innerHTML=rdHtml;
     const pl=$('pirateList'); pl.innerHTML='';
     S.pirates.forEach(p=>{
@@ -1624,6 +1635,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         const pieImg=k==='plumpie'?IMG_PLUMPIE:IMG_APPLEPIE;
         s.innerHTML=owned
           ? '<img class="pieImg" src="'+pieImg+'"><span>'+label+'</span>'
+          : '<span class="qBig">?</span>';
+      } else if(k==='magicnecklace'){
+        s.innerHTML=owned
+          ? '<img class="necklaceCardIcon" src="'+IMG_NECKLACE_MAGIC+'" alt="magic necklace"><span>'+label+'</span>'
           : '<span class="qBig">?</span>';
       } else {
         s.innerHTML=owned ? e+'<span>'+label+'</span>' : '<span class="qBig">?</span>';
@@ -1658,12 +1673,6 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         g.className='slot itemSlot'; g.id='slot-plumingredients';
         g.innerHTML='<img class="ingImg" src="'+IMG_PLUMPIE_INGREDIENTS+'"><span>Ingredients</span>';
         inv.appendChild(g);
-      }
-      if(S.inventory.driedmeat){
-        const dm=document.createElement('div');
-        dm.className='slot itemSlot'; dm.id='slot-driedmeat';
-        dm.innerHTML='<img class="ingImg" src="'+IMG_DRIEDMEAT+'"><span>Dried Meat</span>';
-        inv.appendChild(dm);
       }
     }
     if(S.pearl!=='none'){
@@ -1719,9 +1728,13 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   };
   const JELLY_BASE_STEPS=2, JELLY_FAST_STEPS=3;
   let curLevel=1, playerSprite=null, savedGame=null;
-  function playerImg(){ return playerSprite==='sister' ? IMG_SISTER : IMG_PLAYER; }
+  function playerImg(){
+    if(S && S.inventory && S.inventory.driedmeat) return IMG_PLAYER_DRIEDMEAT;
+    return playerSprite==='sister' ? IMG_SISTER : IMG_PLAYER;
+  }
 
   const IMG_PLAYER='assets/img/player.png';
+  const IMG_PLAYER_DRIEDMEAT='assets/img/player-driedmeat.png';
   const IMG_SISTER='assets/img/sister.png';
 
   function rollDie(){return 1+Math.floor(Math.random()*6);}
@@ -2142,16 +2155,19 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function tameShark(){
     S.inventory.driedmeat=false;
-    S.shark.active=false;
     S.shark.tamed=true;
-    S.inventory.magicnecklace=true;
     render();
-    log('🥩 You feed the shark the dried meat — it goes calm and swims away, leaving its magic necklace behind!');
+    log('🥩 You feed the shark the dried meat — it goes calm!');
     showNotice(
       '🦈 Shark tamed!',
       '<img class="popImg" src="'+IMG_SHARK_NO_NECKLACE+'">',
-      'The shark takes the dried meat and swims off, dropping its <b>magic necklace</b> behind! It\'s now in your enchantments — the captain won\'t be able to resist it.',
-      ()=>afterMermaidMove()
+      'The shark takes the dried meat and goes calm! It drops its <b>magic necklace</b> and swims off — the captain won\'t be able to resist it.',
+      ()=>{
+        S.shark.active=false;
+        S.inventory.magicnecklace=true;
+        render();
+        afterMermaidMove();
+      }
     );
   }
 
@@ -2382,8 +2398,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                     );
                   }
                 );
-              // Level 4 twist 1: second capture speeds up the shark
-              } else if(curLevel===4 && S.shark && !S.sharkFast && capturedCount>=2){
+              // Level 4 twist 1: second capture speeds up the shark (skip if already tamed)
+              } else if(curLevel===4 && S.shark && S.shark.active && !S.sharkFast && capturedCount>=2){
                 S.sharkFast=true;
                 S.shark.speed=3;
                 showNotice(
@@ -2485,14 +2501,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(pos===XSQUARE && p.carrying){
         p.carrying=false; S.wood++;
         SFX.woodDeliver();
-        events.push('delivered wood to the ship ('+S.wood+'/'+WOOD_GOAL+') 🪵');
+        events.push('delivered wood to the ship ('+S.wood+'/'+woodGoal()+') 🪵');
       }
       render();
       flashCell(pos);
       hopPiece('#pir-'+p.id);
       const charEl=document.querySelector('#pir-'+p.id+' .pirChar');
       if(charEl) charEl.classList.add('walking');
-      if(S.wood>=WOOD_GOAL){
+      if(S.wood>=woodGoal()){
         log('🏴‍☠️ '+p.name+' '+events.join(', then ')+'.');
         endGame(false);
         return;
@@ -2566,7 +2582,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   ];
   function sharkTurn(){
     if(S.over) return;
-    if(curLevel!==4 || !S.shark || !S.shark.active){ jellyTurn(); return; }
+    if(curLevel!==4 || !S.shark || !S.shark.active || S.shark.tamed){ jellyTurn(); return; }
+    S.shark.onscreen=true;   // hidden during the very first turn, visible from here on
     S.phase='sharkTurn';
     setDice('A shark is patrolling…', true);
     let steps=0;
@@ -2584,6 +2601,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       }
       render();
       flashCell(sh.row+sh.col);
+      hopPiece('#sharkPiece');
       if(checkSharkHit()) return;   // chomp pauses everything until the fail screen
       steps++;
       if(steps<sh.speed) setTimeout(step,300);
@@ -2594,7 +2612,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function checkSharkHit(){
     const sh=S.shark;
-    if(!sh || !sh.active || S.over) return false;
+    if(!sh || !sh.active || sh.tamed || S.over) return false;
     if(S.mer.row===sh.row && S.mer.col===sh.col){ sharkChomped(); return true; }
     return false;
   }
@@ -2701,7 +2719,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(!win){
       $('endTitle').textContent='The ship sails away…';
       $('endEmoji').innerHTML='<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span><span class="popHeart">😢</span></span>';
-      $('endText').innerHTML='The pirates gathered <b>'+WOOD_GOAL+'</b> pieces of wood and fixed the ship before you could stop them. Try a bolder strategy next time!';
+      $('endText').innerHTML='The pirates gathered <b>'+woodGoal()+'</b> pieces of wood and fixed the ship before you could stop them. Try a bolder strategy next time!';
       $('restart').classList.remove('hidden'); $('restart').textContent='Play again';
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
