@@ -2193,7 +2193,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         afterMermaidMove();
       });
     } else {
-      sharkChomped();
+      sharkBite();
     }
     return true;
   }
@@ -2704,9 +2704,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function checkSharkHit(){
     const sh=S.shark;
-    if(!sh || !sh.active || S.over) return false;
+    if(!sh || !sh.active || S.over || S.turnsToSkip>0) return false;   // already recovering, can't be re-bitten
     if(S.mer.row===sh.row && S.mer.col===sh.col){
-      if(S.inventory.driedmeat){ distractShark(jellyTurn); } else { sharkChomped(); }
+      if(S.inventory.driedmeat){ distractShark(jellyTurn); } else { sharkBite(); }
       return true;
     }
     return false;
@@ -2792,18 +2792,20 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   // ---------- END ----------
-  // ---------- SHARK CHOMPED (Level 4 instant-fail) ----------
-  function sharkChomped(){
-    S.over=true; S.phase='over';
-    SFX.lose();
-    setDice('Shark chomped! Ouch!', true);
-    $('endTitle').textContent='Shark chomped! Ouch!';
-    $('endEmoji').innerHTML='<img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'">';
-    $('endText').innerHTML='The shark got you! Take a day to recover and try again.<br><br>'
-      +'<b class="beginLine">Look for dried meat in one of the treasure chests — it\'ll distract him just long enough to grab his necklace and sneak away.</b>';
-    $('restart').classList.remove('hidden'); $('restart').textContent='Play again';
-    $('toMenu').classList.remove('hidden');
-    $('endOverlay').classList.remove('hidden');
+  // ---------- SHARK BITE (Level 4) ----------
+  // Same logic as a jellyfish sting: lose a turn recovering, not game over.
+  function sharkBite(){
+    S.turnsToSkip=1;   // matches the jellyfish sting: lose exactly one full turn
+    SFX.sting();
+    render();
+    log('🦈 The shark bit you! You lose a turn recovering your nerves.');
+    showNotice(
+      '🦈 Ouch — shark bite!',
+      '<img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'">',
+      'Stay still to recover.<br><span class="warnLine">Lose <b>1</b> turn</span><br><br>'
+      +'<b class="beginLine">Look for dried meat in one of the treasure chests — it\'ll distract him just long enough to grab his necklace and sneak away.</b>',
+      ()=>setTimeout(runSkippedTurn,200)   // same resume path as a jellyfish sting
+    );
   }
 
   function endGame(win){
