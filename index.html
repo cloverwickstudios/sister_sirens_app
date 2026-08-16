@@ -2165,7 +2165,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       flashCell(S.mer.row+S.mer.col);
       hopPiece('#merPiece');
       SFX.step('mer');
-      if(checkSharkEncounter()) return;   // chomp or tame pauses the move
+      const isFinalStep=(i===steps.length-1);
+      if(isFinalStep && checkSharkEncounter()) return;   // only the destination tile counts; chomp or tame pauses the move
       i++;
       setTimeout(doStep, STEP_MS);
     }
