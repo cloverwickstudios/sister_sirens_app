@@ -2619,7 +2619,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(S.over) return;
       const sh=S.shark;
       const nc=sh.col+sh.dir;
-      if(nc<1 || nc>COLS){
+      // The shell bed tile is a safe zone: the shark never enters it, treating
+      // that column as the end of the lane instead.
+      const wouldEnterShell=(sh.row===SHELL.row && nc===SHELL.col);
+      if(nc<1 || nc>COLS || wouldEnterShell){
         sh.tierIdx=(sh.tierIdx+1)%SHARK_TIERS.length;
         const t=SHARK_TIERS[sh.tierIdx];
         sh.row=t.row; sh.dir=t.dir;
