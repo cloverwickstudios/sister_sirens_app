@@ -1449,7 +1449,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         {id:0, row:'W1', col:null, dir:-1, start:COLS, delay:0},
         {id:1, row:'W3', col:null, dir:+1, start:2,    delay:1},
       ] : [],
-      shark:isL4 ? {row:'W1', col:COLS, dir:-1, tierIdx:0, speed:2, active:true, tamed:false, onscreen:false} : null,
+      shark:isL4 ? {row:'W1', col:COLS, dir:-1, tierIdx:0, speed:2, active:true, onscreen:false} : null,
       sharkFast:false,
       captainRevealed:false,
     };
@@ -1592,7 +1592,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       const sc=$('cell-'+S.shark.row+S.shark.col);
       if(sc){
         const el=document.createElement('div'); el.className='piece shark'; el.id='sharkPiece';
-        el.innerHTML='<img src="'+IMG_SHARK_NECKLACE+'" alt="shark" style="transform:scaleX('+(S.shark.dir===-1?-1:1)+')">';
+        const sharkImg=S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE;
+        el.innerHTML='<img src="'+sharkImg+'" alt="shark" style="transform:scaleX('+(S.shark.dir===-1?-1:1)+')">';
         sc.appendChild(el);
       }
     }
@@ -2178,28 +2179,45 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function checkSharkEncounter(){
     if(curLevel!==4 || !S.shark || !S.shark.active) return false;
     if(S.mer.row!==S.shark.row || S.mer.col!==S.shark.col) return false;
-    if(S.inventory.driedmeat){ tameShark(afterMermaidMove); } else { sharkChomped(); }
+    if(S.inventory.driedmeat){
+      distractShark(()=>{
+        S.extraTurn=true;
+        updateExtraBadge();
+        afterMermaidMove();
+      });
+    } else {
+      sharkChomped();
+    }
     return true;
   }
 
-  function tameShark(resumeFn){
+  // Dried meat only distracts the shark for a moment — it isn't tamed or
+  // removed. You grab the necklace while he's busy, then get one bonus
+  // turn to put some distance between you before he resumes his patrol.
+  function distractShark(resumeFn){
     S.inventory.driedmeat=false;
-    S.shark.tamed=true;
     render();
-    log('🥩 You feed the shark the dried meat — it goes calm!');
+    log('🥩 You toss the shark the dried meat — he\'s distracted!');
     showNotice(
-      '🦈 Shark tamed!',
-      '<img class="popImg" src="'+IMG_SHARK_NO_NECKLACE+'">',
-      'The shark takes the dried meat and goes calm, then swims off into the deep!',
+      '🦈 Shark distracted!',
+      '<img class="popImg" src="'+IMG_SHARK_NECKLACE+'">',
+      'The shark gobbles up the dried meat, completely distracted for a moment!',
       ()=>{
-        S.shark.active=false;
         S.inventory.magicnecklace=true;
         render();
         showNotice(
           '✨ Magic necklace!',
           '<img class="popImg" src="'+IMG_NECKLACE_MAGIC+'">',
-          'The shark left its <b>magic necklace</b> behind! This piece looks like it could win over a very special pirate…',
-          resumeFn
+          'While he\'s busy, you slip off his <b>magic necklace</b>! This piece looks like it could win over a very special pirate…',
+          ()=>{
+            showNotice(
+              '🏃 Sneak away!',
+              '<img class="popImg" src="'+IMG_SHARK_NO_NECKLACE+'">',
+              'Quick — take one extra roll to sneak away before he notices!',
+              resumeFn,
+              "Let's go!"
+            );
+          }
         );
       }
     );
@@ -2441,7 +2459,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                 S.shark.speed=3;
                 showNotice(
                   '🦈 Uh oh…',
-                  '<span class="popArt"><img class="popImg" src="'+IMG_SHARK_NECKLACE+'"></span>',
+                  '<span class="popArt"><img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'"></span>',
                   'The commotion on the beach has the shark on edge — it\'s patrolling <b>faster</b> now!',
                   proceed
                 );
@@ -2619,7 +2637,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   ];
   function sharkTurn(){
     if(S.over) return;
-    if(curLevel!==4 || !S.shark || !S.shark.active || S.shark.tamed){ jellyTurn(); return; }
+    if(curLevel!==4 || !S.shark || !S.shark.active){ jellyTurn(); return; }
     S.shark.onscreen=true;   // hidden during the very first turn, visible from here on
     S.phase='sharkTurn';
     setDice('A shark is patrolling…', true);
@@ -2652,9 +2670,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function checkSharkHit(){
     const sh=S.shark;
-    if(!sh || !sh.active || sh.tamed || S.over) return false;
+    if(!sh || !sh.active || S.over) return false;
     if(S.mer.row===sh.row && S.mer.col===sh.col){
-      if(S.inventory.driedmeat){ tameShark(jellyTurn); } else { sharkChomped(); }
+      if(S.inventory.driedmeat){ distractShark(jellyTurn); } else { sharkChomped(); }
       return true;
     }
     return false;
@@ -2746,9 +2764,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     SFX.lose();
     setDice('Shark chomped! Ouch!', true);
     $('endTitle').textContent='Shark chomped! Ouch!';
-    $('endEmoji').innerHTML='<img class="popImg" src="'+IMG_SHARK_NECKLACE+'">';
+    $('endEmoji').innerHTML='<img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'">';
     $('endText').innerHTML='The shark got you! Take a day to recover and try again.<br><br>'
-      +'<b class="beginLine">Look for dried meat in one of the treasure chests — that\'s usually the key to taming sharks.</b>';
+      +'<b class="beginLine">Look for dried meat in one of the treasure chests — it\'ll distract him just long enough to grab his necklace and sneak away.</b>';
     $('restart').classList.remove('hidden'); $('restart').textContent='Play again';
     $('toMenu').classList.remove('hidden');
     $('endOverlay').classList.remove('hidden');
