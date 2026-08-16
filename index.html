@@ -2807,11 +2807,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     SFX.sting();
     render();
     log('🦈 The shark bit you! You lose a turn recovering your nerves.');
+    const hint=S.inventory.magicnecklace
+      ? 'You\'ve already used your dried meat to distract him and grab his necklace — better swim carefully around him from now on, or he\'ll bite again!'
+      : 'Look for dried meat in one of the treasure chests — it\'ll distract him just long enough to grab his necklace and sneak away.';
     showNotice(
       '🦈 Ouch — shark bite!',
       '<img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'">',
       'Stay still to recover.<br><span class="warnLine">Lose <b>1</b> turn</span><br><br>'
-      +'<b class="beginLine">Look for dried meat in one of the treasure chests — it\'ll distract him just long enough to grab his necklace and sneak away.</b>',
+      +'<b class="beginLine">'+hint+'</b>',
       ()=>setTimeout(runSkippedTurn,200)   // same resume path as a jellyfish sting
     );
   }
