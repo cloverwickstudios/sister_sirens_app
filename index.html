@@ -862,7 +862,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#resumeBtn.goldBtn.pressed{animation:none;}
 
   /* TEMP DEBUG BUTTON — remove before release */
-  button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn{
+  button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn, button#debugCaptainMsg.debugBtn{
     position:absolute; bottom:5%;
     font-family:'Quicksand',sans-serif; font-size:12px; font-weight:700;
     color:#3A4A55; background:rgba(255,255,255,.82); border:2px dashed #7C8B96;
@@ -872,10 +872,12 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#debugL2.debugBtn{left:50%; transform:translateX(-104%);}
   button#debugL3.debugBtn{left:50%; transform:translateX(4%);}
   button#debugL4.debugBtn{left:50%; transform:translateX(112%);}
+  button#debugCaptainMsg.debugBtn{left:50%; transform:translate(-50%,38px);}
   button#debugL2.debugBtn:active{transform:translateX(-104%) scale(.93) !important;}
   button#debugL3.debugBtn:active{transform:translateX(4%) scale(.93) !important;}
   button#debugL4.debugBtn:active{transform:translateX(112%) scale(.93) !important;}
-  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed{animation:none;}
+  button#debugCaptainMsg.debugBtn:active{transform:translate(-50%,38px) scale(.93) !important;}
+  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed, button#debugCaptainMsg.debugBtn.pressed{animation:none;}
 
   /* ---------- MAGIC PEARL CARD ---------- */
   .slot.pearlSlot{position:relative; overflow:hidden;}
@@ -960,6 +962,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   <button class="btn debugBtn" id="debugL2">🐞 Jump to Level 2</button>
   <button class="btn debugBtn" id="debugL3">🐞 Jump to Level 3</button>
   <button class="btn debugBtn" id="debugL4">🐞 Jump to Level 4</button>
+  <button class="btn debugBtn" id="debugCaptainMsg">🐞 Jump to Captain Reveal</button>
 </div>
 
 
@@ -2467,18 +2470,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                 );
               // Level 4 twist 2: fourth capture reveals the hidden captain
               } else if(curLevel===4 && !S.captainRevealed && capturedCount>=4){
-                S.captainRevealed=true;
-                const captain=S.pirates.find(x=>x.dormant);
-                if(captain) captain.dormant=false;
-                showNotice(
-                  '🏴‍☠️ Captain Feathers',
-                  '<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span></span>',
-                  '<b>"WHERE\'S MY CREW???"</b> the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"<br><br>'
-                  +'A fancy-dressed pirate — clearly the captain himself — emerges from the ship…',
-                  ()=>{
-                    if(captain){ emergeCaptain(captain, proceed); } else { proceed(); }
-                  }
-                );
+                revealCaptain(proceed);
               } else {
                 proceed();
               }
@@ -2497,6 +2489,24 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   });
 
   // ---------- CAPTAIN'S ENTRANCE (Level 4) ----------
+  // Fires once all 4 regular pirates are captured: reveal popup, then the
+  // ship-exit animation. Shared by the real capture-flow trigger and the
+  // debug shortcut.
+  function revealCaptain(afterFn){
+    S.captainRevealed=true;
+    const captain=S.pirates.find(x=>x.dormant);
+    if(captain) captain.dormant=false;
+    showNotice(
+      '🏴‍☠️ Captain Feathers',
+      '<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+      '<b>"WHERE\'S MY CREW???"</b> the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"<br><br>'
+      +'A fancy-dressed pirate — clearly the captain himself — emerges from the ship…',
+      ()=>{
+        if(captain){ emergeCaptain(captain, afterFn); } else { afterFn(); }
+      }
+    );
+  }
+
   // A one-off "climbs out of the ship" animation played right after the
   // reveal popup, before his real per-turn movement kicks in next round.
   function emergeCaptain(captain, cb){
@@ -3040,6 +3050,24 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const m=$('menuScreen');
     m.classList.add('hide');
     setTimeout(()=>{ m.style.display='none'; startLevel4(); }, 560);
+  });
+
+  // TEMP DEBUG — remove before release
+  $('debugCaptainMsg').addEventListener('click',()=>{
+    AUDIO.ensureAudio();
+    const m=$('menuScreen');
+    m.classList.add('hide');
+    setTimeout(()=>{
+      m.style.display='none';
+      playerSprite='player';
+      curLevel=4;
+      document.body.classList.remove('coralCove','pearlCove');
+      document.body.classList.add('seashellCove');
+      init();
+      S.pirates.forEach(p=>{ if(!p.dormant) p.captured=true; });
+      render();
+      revealCaptain(()=>startPlayerTurn());
+    }, 560);
   });
 
   /* Resume Saved Game disabled for now
