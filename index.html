@@ -170,6 +170,22 @@
   .pirChar.p0 .bandana{background:var(--lav-deep);}
   .pirChar.p1 .bandana{background:var(--coral-deep);}
   .pirChar.p2 .bandana{background:var(--gold);}
+  /* Captain Feathers: fancy coat, plumed hat, parrot on the shoulder */
+  .pirChar.p4 .bandana{
+    background:#3A2A5C; width:22px; height:10px; border-radius:11px 11px 3px 3px; top:-2px;
+  }
+  .pirChar.p4 .bandana::before{
+    content:''; position:absolute; top:-4px; left:1px; width:5px; height:15px;
+    background:linear-gradient(180deg,#F2789A,#FDF6EA 65%,#fff);
+    border-radius:50% 50% 50% 0%; transform:rotate(-20deg); z-index:4;
+  }
+  .pirChar.p4 .torso{
+    background:linear-gradient(180deg,#3A2A5C,#2A1D42); border-color:var(--gold); border-width:2px;
+  }
+  .pirChar.p4 .torso::after{
+    content:''; position:absolute; top:-3px; right:-6px; width:8px; height:7px;
+    background:radial-gradient(circle at 35% 35%,#4CAF6B,#2E8B57); border-radius:50% 50% 50% 15%; z-index:2;
+  }
   .pirChar.walking{animation:bob .3s ease-in-out infinite alternate;}
   .pirChar.walking .leg:first-child{animation:legA .3s ease-in-out infinite alternate;}
   .pirChar.walking .leg:last-child{animation:legB .3s ease-in-out infinite alternate;}
@@ -1377,7 +1393,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   // Level 4 adds a 4th pirate who loves plum pie, plus a hidden captain who only
   // emerges once the other 4 pirates are captured (weak to the shark's magic necklace)
   const PIRATE_DEF_PLUM = {id:3, name:'Pirate Plum', weakness:'Plum Pie', item:'plumpie', gull:2, emoji:'🥧', start:3};
-  const PIRATE_DEF_CAPTAIN = {id:4, name:'Captain Hook', weakness:'Necklace', item:'magicnecklace', gull:2, emoji:NECKLACE_MAGIC_ICON, start:9, dormant:true};
+  const PIRATE_DEF_CAPTAIN = {id:4, name:'Captain Feathers', weakness:'Necklace', item:'magicnecklace', gull:2, emoji:NECKLACE_MAGIC_ICON, start:9, dormant:true, steps:5};
   function pirateDefsForLevel(){
     if(curLevel===3) return PIRATE_DEFS.concat([PIRATE_DEF_PIE]);
     if(curLevel===4) return PIRATE_DEFS.concat([PIRATE_DEF_PLUM, PIRATE_DEF_CAPTAIN]);
@@ -2425,7 +2441,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                 const captain=S.pirates.find(x=>x.dormant);
                 if(captain) captain.dormant=false;
                 showNotice(
-                  '🏴‍☠️ Captain Hook',
+                  '🏴‍☠️ Captain Feathers',
                   '<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span></span>',
                   '"WHERE\'S MY CREW???" the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"',
                   proceed
@@ -2479,9 +2495,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         }
         p.inShip=false;
         p.pathIdx=-1; // first step lands on PATH[0]
-        movePirate(p, PIRATE_STEPS, ['climbed out of the ship ⚓']);
+        movePirate(p, p.steps||PIRATE_STEPS, ['climbed out of the ship ⚓']);
       } else {
-        movePirate(p, PIRATE_STEPS, []);
+        movePirate(p, p.steps||PIRATE_STEPS, []);
       }
     }
 
