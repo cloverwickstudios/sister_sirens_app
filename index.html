@@ -694,6 +694,15 @@
     transform-origin:50% 18%;
     animation:jellyPulse 2.9s ease-in-out infinite, jellySway 4.3s ease-in-out infinite;
   }
+  /* ---------- SHARK (level 4) ---------- */
+  .piece.shark{
+    width:130%; height:130%; display:flex; align-items:center; justify-content:center;
+    z-index:6; pointer-events:none; transition:none;
+  }
+  .piece.shark img{
+    width:100%; height:100%; object-fit:contain;
+    filter:drop-shadow(0 3px 5px rgba(10,30,50,.45));
+  }
   /* float up and down in the current */
   @keyframes jellyBob{
     0%,100%{transform:translateY(-3px);}
@@ -1298,6 +1307,13 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const PERFUME_ICON='<img class="perfumeIcon" src="'+IMG_PERFUME+'" alt="perfume">';
   const IMG_DIAMOND='assets/img/diamond.png';
   const DIAMOND_ICON='<img class="inlineIcon" src="'+IMG_DIAMOND+'" alt="diamond">';
+  const IMG_SHARK_NECKLACE='assets/img/shark-necklace.png';
+  const IMG_SHARK_NO_NECKLACE='assets/img/shark-no-necklace.png';
+  const IMG_DRIEDMEAT='assets/img/dried-meat.png';
+  const IMG_NECKLACE_MAGIC='assets/img/necklace-magic.png';
+  const NECKLACE_MAGIC_ICON='<img class="inlineIcon" src="'+IMG_NECKLACE_MAGIC+'" alt="magic necklace">';
+  const IMG_PLUMPIE='assets/img/plum-pie.png';
+  const IMG_PLUMPIE_INGREDIENTS='assets/img/plum-pie-ingredients.png';
   const ITEMS = {
     necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:DIAMOND_ICON},
     perfume: {item:'perfume',  name:'Perfume',  power:'Smell',   emoji:PERFUME_ICON},
@@ -1307,6 +1323,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     utensils:{item:'utensils', name:'Kitchen Utensils', power:null, emoji:'🍴'},
     ingredients:{item:'ingredients', name:'Apple Pie Ingredients', power:null, emoji:'🍎'},
     applepie:{item:'applepie', name:'Apple Pie', power:'Apple Pie', emoji:'🥧'},
+    driedmeat:{item:'driedmeat', name:'Dried Meat', power:null, emoji:'🥩'},
+    magicnecklace:{item:'magicnecklace', name:'Magic Necklace', power:'Necklace', emoji:NECKLACE_MAGIC_ICON},
+    plumingredients:{item:'plumingredients', name:'Plum Pie Ingredients', power:null, emoji:'🍇'},
+    plumpie:{item:'plumpie', name:'Plum Pie', power:'Plum Pie', emoji:'🥧'},
   };
   // 4 shuffled chest spots (costs 3/4/5/6) + 1 fixed cannonball decoy (always cost 3)
   const CHEST_SPOTS = [
@@ -1318,6 +1338,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const CANNON_SPOT = {row:'W2', col:5, cost:3};
   // Level 3 only: an extra chest holding apple pie ingredients (fixed dig cost 5)
   const INGREDIENTS_SPOT = {row:'W3', col:2, cost:5};
+  // Level 4 only: extra chests for dried meat (tames the shark) and plum pie ingredients
+  const DRIEDMEAT_SPOT = {row:'W3', col:2, cost:5};
+  const PLUM_INGREDIENTS_SPOT = {row:'W1', col:7, cost:5};
   const SLOT_ORDER=['flute','perfume','necklace'];
   const PATH = [];
   for(let c=1;c<=COLS;c++) PATH.push('O'+c);
@@ -1331,8 +1354,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   ];
   // Level 3 adds a 4th pirate who loves apple pie (a crafted enchantment)
   const PIRATE_DEF_PIE = {id:3, name:'Pirate Crumb', weakness:'Apple Pie', item:'applepie', gull:2, emoji:'🥧', start:3};
+  // Level 4 adds a 4th pirate who loves plum pie, plus a hidden captain who only
+  // emerges once the other 4 pirates are captured (weak to the shark's magic necklace)
+  const PIRATE_DEF_PLUM = {id:3, name:'Pirate Plum', weakness:'Plum Pie', item:'plumpie', gull:2, emoji:'🥧', start:3};
+  const PIRATE_DEF_CAPTAIN = {id:4, name:'Captain Hook', weakness:'Necklace', item:'magicnecklace', gull:2, emoji:NECKLACE_MAGIC_ICON, start:9, dormant:true};
   function pirateDefsForLevel(){
-    return curLevel===3 ? PIRATE_DEFS.concat([PIRATE_DEF_PIE]) : PIRATE_DEFS;
+    if(curLevel===3) return PIRATE_DEFS.concat([PIRATE_DEF_PIE]);
+    if(curLevel===4) return PIRATE_DEFS.concat([PIRATE_DEF_PLUM, PIRATE_DEF_CAPTAIN]);
+    return PIRATE_DEFS;
   }
   const WOOD_GOAL=10, PIRATE_STEPS=3;
   const STEP_MS=250;
@@ -1346,17 +1375,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
   function freshState(){
     const isL3 = curLevel===3;
-    // In L3 the utensils chest becomes a real keepable item (not a decoy)
-    const contents=shuffle(['necklace','perfume','flute', isL3?'utensils':'decoy']);
+    const isL4 = curLevel===4;
+    // In L3/L4 the utensils chest becomes a real keepable item (not a decoy)
+    const contents=shuffle(['necklace','perfume','flute', (isL3||isL4)?'utensils':'decoy']);
     let chests=CHEST_SPOTS.map((s,i)=>({...s, key:contents[i], ...ITEMS[contents[i]], opened:false}))
         .concat([{...CANNON_SPOT, key:'cannon', ...ITEMS.cannon, opened:false}]);
     if(isL3) chests=chests.concat([{...INGREDIENTS_SPOT, key:'ingredients', ...ITEMS.ingredients, opened:false}]);
+    if(isL4) chests=chests.concat([
+      {...DRIEDMEAT_SPOT, key:'driedmeat', ...ITEMS.driedmeat, opened:false},
+      {...PLUM_INGREDIENTS_SPOT, key:'plumingredients', ...ITEMS.plumingredients, opened:false},
+    ]);
     return {
       chests:chests,
       mer:{row:'W3', col:1},
-      inventory:{flute:false, perfume:false, necklace:false, applepie:false},
-      utensils:'none',      // 'none' | 'have'  (L3)
+      inventory:{flute:false, perfume:false, necklace:false, applepie:false, driedmeat:false, magicnecklace:false, plumpie:false},
+      utensils:'none',      // 'none' | 'have'  (L3/L4)
       ingredients:'none',   // 'none' | 'have'  (L3)
+      plumingredients:'none', // 'none' | 'have' (L4)
       pirates:pirateDefsForLevel().map(p=>({...p, pathIdx:-1, inShip:true, carrying:false, captured:false, revealed:false})),
       wood:0,
       phase:'chooseAction',
@@ -1376,6 +1411,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         {id:0, row:'W1', col:null, dir:-1, start:COLS, delay:0},
         {id:1, row:'W3', col:null, dir:+1, start:2,    delay:1},
       ] : [],
+      shark:isL4 ? {row:'W1', col:COLS, dir:-1, tierIdx:0, speed:2, active:true, tamed:false} : null,
+      sharkFast:false,
+      captainRevealed:false,
     };
   }
 
@@ -1511,6 +1549,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       el.innerHTML='<img src="'+IMG_JELLY+'" alt="jellyfish">';
       jc.appendChild(el);
     });
+    if(S.shark && S.shark.active){
+      const sc=$('cell-'+S.shark.row+S.shark.col);
+      if(sc){
+        const el=document.createElement('div'); el.className='piece shark'; el.id='sharkPiece';
+        el.innerHTML='<img src="'+IMG_SHARK_NECKLACE+'" alt="shark">';
+        sc.appendChild(el);
+      }
+    }
     if(S.dragging){
       const drag=document.createElement('div');
       drag.className='piece pirate';
@@ -1566,14 +1612,18 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const powers=[['flute','🎶','Music'],['perfume',PERFUME_ICON,'Smell'],['necklace',DIAMOND_ICON,'Sparkle']];
     // Level 3: apple pie is a 4th enchantment, shown once crafted
     if(curLevel===3) powers.push(['applepie','🥧','Apple Pie']);
+    // Level 4: plum pie (crafted) and the shark's magic necklace (tamed) are extra enchantments
+    if(curLevel===4) powers.push(['plumpie','🥧','Plum Pie'], ['magicnecklace',NECKLACE_MAGIC_ICON,'Necklace']);
     powers.forEach(([k,e,label])=>{
       const s=document.createElement('div');
       const owned=S.inventory[k];
-      s.className='slot '+(owned?'owned':'locked')+(k==='applepie'?' pieSlot':'');
+      const isPie=(k==='applepie'||k==='plumpie');
+      s.className='slot '+(owned?'owned':'locked')+(isPie?' pieSlot':'');
       s.id='slot-'+k;
-      if(k==='applepie'){
+      if(isPie){
+        const pieImg=k==='plumpie'?IMG_PLUMPIE:IMG_APPLEPIE;
         s.innerHTML=owned
-          ? '<img class="pieImg" src="'+IMG_APPLEPIE+'"><span>Apple Pie</span>'
+          ? '<img class="pieImg" src="'+pieImg+'"><span>'+label+'</span>'
           : '<span class="qBig">?</span>';
       } else {
         s.innerHTML=owned ? e+'<span>'+label+'</span>' : '<span class="qBig">?</span>';
@@ -1593,6 +1643,27 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         g.className='slot itemSlot'; g.id='slot-ingredients';
         g.innerHTML='<img class="ingImg" src="'+IMG_INGREDIENTS+'"><span>Ingredients</span>';
         inv.appendChild(g);
+      }
+    }
+    // Level 4 held ingredient cards (before combining)
+    if(curLevel===4){
+      if(S.utensils==='have' && !S.inventory.plumpie){
+        const u=document.createElement('div');
+        u.className='slot itemSlot'; u.id='slot-utensils';
+        u.innerHTML='<span class="itemEmoji">🍴</span><span>Utensils</span>';
+        inv.appendChild(u);
+      }
+      if(S.plumingredients==='have' && !S.inventory.plumpie){
+        const g=document.createElement('div');
+        g.className='slot itemSlot'; g.id='slot-plumingredients';
+        g.innerHTML='<img class="ingImg" src="'+IMG_PLUMPIE_INGREDIENTS+'"><span>Ingredients</span>';
+        inv.appendChild(g);
+      }
+      if(S.inventory.driedmeat){
+        const dm=document.createElement('div');
+        dm.className='slot itemSlot'; dm.id='slot-driedmeat';
+        dm.innerHTML='<img class="ingImg" src="'+IMG_DRIEDMEAT+'"><span>Dried Meat</span>';
+        inv.appendChild(dm);
       }
     }
     if(S.pearl!=='none'){
@@ -1771,6 +1842,25 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     );
   }
 
+  function combinePlumPie(){
+    S.utensils='used'; S.plumingredients='used';
+    S.inventory.plumpie=true;
+    SFX.win2 ? SFX.win2() : SFX.sparkleLove();
+    render();
+    const slot=$('slot-plumpie');
+    if(slot){ slot.classList.add('justGot'); }
+    log('🥧 You combined the ingredients and utensils into a warm plum pie!');
+    const hunter=S.pirates.find(p=>p.item==='plumpie');
+    showNotice(
+      '🥧 Plum pie baked!',
+      '<img class="popImg" src="'+IMG_PLUMPIE+'">',
+      'You baked a warm plum pie — a brand new enchantment! '+(hunter && hunter.revealed
+        ? 'Be on the lookout for '+hunter.name+', since plum pie is his weakness.'
+        : 'One of these pirates won\'t be able to resist that smell… but which one?'),
+      ()=>endPlayerAction(300)
+    );
+  }
+
   function usePearl(){
     if(S.pearl!=='ready') return;
     if(S.phase!=='chooseAction') return;   // only at start of your turn, before rolling
@@ -1885,12 +1975,16 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(ch.key==='utensils'){
         S.utensils='have'; render();
         log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found kitchen utensils! 🍴');
-        if(S.ingredients==='have'){
+        const isL4=curLevel===4;
+        const otherHave=isL4 ? (S.plumingredients==='have') : (S.ingredients==='have');
+        const otherImg=isL4 ? IMG_PLUMPIE_INGREDIENTS : IMG_INGREDIENTS;
+        const pieWord=isL4 ? 'plum pie' : 'apple pie';
+        if(otherHave){
           showNotice(
             '🍴 Kitchen utensils!',
-            '<span class="popArt"><img class="popImg" src="'+IMG_INGREDIENTS+'"><span class="popPlus">+</span>🍴</span>',
-            'You already have apple pie ingredients! <b>Combine them into an apple pie?</b>',
-            ()=>combineApplePie(),
+            '<span class="popArt"><img class="popImg" src="'+otherImg+'"><span class="popPlus">+</span>🍴</span>',
+            'You already have '+pieWord+' ingredients! <b>Combine them into a '+pieWord+'?</b>',
+            isL4 ? ()=>combinePlumPie() : ()=>combineApplePie(),
             'Combine'
           );
         } else {
@@ -1923,6 +2017,39 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
             ()=>endPlayerAction(300)
           );
         }
+        return;
+      }
+      if(ch.key==='plumingredients'){
+        S.plumingredients='have'; render();
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found plum pie ingredients! 🍇');
+        if(S.utensils==='have'){
+          showNotice(
+            '🍇 Plum pie ingredients!',
+            '<span class="popArt"><img class="popImg" src="'+IMG_PLUMPIE_INGREDIENTS+'"><span class="popPlus">+</span>🍴</span>',
+            'Plums, butter, sugar and spice — and you already have kitchen utensils! <b>Combine them into a plum pie?</b>',
+            ()=>combinePlumPie(),
+            'Combine'
+          );
+        } else {
+          showNotice(
+            '🍇 Plum pie ingredients!',
+            '<img class="popImg" src="'+IMG_PLUMPIE_INGREDIENTS+'">',
+            'Plums, butter, sugar and spice! These can be combined with <b>kitchen utensils</b> to bake a plum pie.<br><br>'
+            +'<span class="stungNote">There must be some kitchen utensils somewhere — keep looking for them to use this enchantment!</span>',
+            ()=>endPlayerAction(300)
+          );
+        }
+        return;
+      }
+      if(ch.key==='driedmeat'){
+        S.inventory.driedmeat=true; render();
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found dried meat! 🥩');
+        showNotice(
+          '🥩 Dried meat!',
+          '<img class="popImg" src="'+IMG_DRIEDMEAT+'">',
+          'A stash of dried meat — sharks can\'t resist it! Carry it out and swim right up to the shark to tame it.',
+          ()=>endPlayerAction(300)
+        );
         return;
       }
       const cellEl=$('cell-'+ch.row+ch.col);
@@ -1997,11 +2124,35 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       flashCell(S.mer.row+S.mer.col);
       hopPiece('#merPiece');
       SFX.step('mer');
+      if(checkSharkEncounter()) return;   // chomp or tame pauses the move
       i++;
       setTimeout(doStep, STEP_MS);
     }
     if(steps.length===0){ afterMermaidMove(); return; }
     doStep();
+  }
+
+  // ---------- SHARK ENCOUNTER (Level 4) ----------
+  function checkSharkEncounter(){
+    if(curLevel!==4 || !S.shark || !S.shark.active) return false;
+    if(S.mer.row!==S.shark.row || S.mer.col!==S.shark.col) return false;
+    if(S.inventory.driedmeat){ tameShark(); } else { sharkChomped(); }
+    return true;
+  }
+
+  function tameShark(){
+    S.inventory.driedmeat=false;
+    S.shark.active=false;
+    S.shark.tamed=true;
+    S.inventory.magicnecklace=true;
+    render();
+    log('🥩 You feed the shark the dried meat — it goes calm and swims away, leaving its magic necklace behind!');
+    showNotice(
+      '🦈 Shark tamed!',
+      '<img class="popImg" src="'+IMG_SHARK_NO_NECKLACE+'">',
+      'The shark takes the dried meat and swims off, dropping its <b>magic necklace</b> behind! It\'s now in your enchantments — the captain won\'t be able to resist it.',
+      ()=>afterMermaidMove()
+    );
   }
 
   // After the player's action: normally pirates go; but if a pearl bonus turn
@@ -2184,7 +2335,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         let toRect;
         if(capEl){ capEl.style.visibility='hidden'; toRect=capEl.getBoundingClientRect(); }
         else { toRect=$('capturedDock').getBoundingClientRect(); }
-        const remaining=S.pirates.filter(x=>!x.captured).length;
+        const remaining=S.pirates.filter(x=>!x.captured && !x.dormant).length;
         flyClone(fromRect, toRect, pirateHTML(e.p,true), ()=>{
           if(capEl) capEl.style.visibility='';
           showNotice(
@@ -2231,6 +2382,27 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                     );
                   }
                 );
+              // Level 4 twist 1: second capture speeds up the shark
+              } else if(curLevel===4 && S.shark && !S.sharkFast && capturedCount>=2){
+                S.sharkFast=true;
+                S.shark.speed=3;
+                showNotice(
+                  '🦈 Uh oh…',
+                  '<span class="popArt"><img class="popImg" src="'+IMG_SHARK_NECKLACE+'"></span>',
+                  'The commotion on the beach has the shark on edge — it\'s patrolling <b>faster</b> now!',
+                  proceed
+                );
+              // Level 4 twist 2: fourth capture reveals the hidden captain
+              } else if(curLevel===4 && !S.captainRevealed && capturedCount>=4){
+                S.captainRevealed=true;
+                const captain=S.pirates.find(x=>x.dormant);
+                if(captain) captain.dormant=false;
+                showNotice(
+                  '🏴‍☠️ Captain Hook',
+                  '<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+                  '"WHERE\'S MY CREW???" the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"',
+                  proceed
+                );
               } else {
                 proceed();
               }
@@ -2257,7 +2429,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(S.over) return;
     S.phase='pirateTurn';
     setDice('Pirates are on the move…', true);
-    const active=S.pirates.filter(p=>!p.captured);
+    const active=S.pirates.filter(p=>!p.captured && !p.dormant);
     // one new pirate leaves the ship each pirate phase (in order)
     const releasing=active.find(p=>p.inShip)||null;
     // movement order: furthest along the path moves first (like baserunners), new exit last
@@ -2268,7 +2440,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     function nextPirate(){
       if(S.over) return;
       while(pi<queue.length && queue[pi].captured) pi++;
-      if(pi>=queue.length){ setTimeout(jellyTurn,320); return; }
+      if(pi>=queue.length){ setTimeout(sharkTurn,320); return; }
       const p=queue[pi];
       if(p.inShip){
         // try to climb out onto the first path square
@@ -2385,6 +2557,48 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     requestAnimationFrame(frame);
   }
 
+  // ---------- SHARK TURN (Level 4) ----------
+  // Boustrophedon patrol: W1 right->left, W2 left->right, W3 right->left, repeat.
+  const SHARK_TIERS = [
+    {row:'W1', dir:-1},
+    {row:'W2', dir:+1},
+    {row:'W3', dir:-1},
+  ];
+  function sharkTurn(){
+    if(S.over) return;
+    if(curLevel!==4 || !S.shark || !S.shark.active){ jellyTurn(); return; }
+    S.phase='sharkTurn';
+    setDice('A shark is patrolling…', true);
+    let steps=0;
+    function step(){
+      if(S.over) return;
+      const sh=S.shark;
+      const nc=sh.col+sh.dir;
+      if(nc<1 || nc>COLS){
+        sh.tierIdx=(sh.tierIdx+1)%SHARK_TIERS.length;
+        const t=SHARK_TIERS[sh.tierIdx];
+        sh.row=t.row; sh.dir=t.dir;
+        sh.col=(t.dir===-1)?COLS:1;
+      } else {
+        sh.col=nc;
+      }
+      render();
+      flashCell(sh.row+sh.col);
+      if(checkSharkHit()) return;   // chomp pauses everything until the fail screen
+      steps++;
+      if(steps<sh.speed) setTimeout(step,300);
+      else setTimeout(jellyTurn,260);
+    }
+    step();
+  }
+
+  function checkSharkHit(){
+    const sh=S.shark;
+    if(!sh || !sh.active || S.over) return false;
+    if(S.mer.row===sh.row && S.mer.col===sh.col){ sharkChomped(); return true; }
+    return false;
+  }
+
   // ---------- JELLYFISH TURN ----------
   function jellyTurn(){
     if(S.over) return;
@@ -2465,6 +2679,20 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   // ---------- END ----------
+  // ---------- SHARK CHOMPED (Level 4 instant-fail) ----------
+  function sharkChomped(){
+    S.over=true; S.phase='over';
+    SFX.lose();
+    setDice('Shark chomped! Ouch!', true);
+    $('endTitle').textContent='Shark chomped! Ouch!';
+    $('endEmoji').innerHTML='<img class="popImg" src="'+IMG_SHARK_NECKLACE+'">';
+    $('endText').innerHTML='The shark got you! Take a day to recover and try again.<br><br>'
+      +'<b class="beginLine">Look for dried meat in one of the treasure chests — that\'s usually the key to taming sharks.</b>';
+    $('restart').classList.remove('hidden'); $('restart').textContent='Play again';
+    $('toMenu').classList.remove('hidden');
+    $('endOverlay').classList.remove('hidden');
+  }
+
   function endGame(win){
     S.over=true; S.phase='over';
     if(win){ SFX.win(); confettiBurst(); } else { SFX.lose(); }
@@ -2676,6 +2904,15 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(curLevel===3){ showSister4Message(); return; }
     }
     init();
+    if(curLevel===4){
+      showNotice(
+        '🐱 Furbles the cat',
+        '<span class="popArt"><img class="popImg" src="'+IMG_GRUMPYCAT+'"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+        'Let\'s try that again — watch out for the shark this time!<br><br><b class="beginLine">Roll the dice to begin!</b>',
+        ()=>startPlayerTurn()
+      );
+      return;
+    }
     showIntro();
   });
 
