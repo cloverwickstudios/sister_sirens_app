@@ -106,6 +106,9 @@
   .chestCost{position:absolute; bottom:2px; right:4px; font-size:10px; font-weight:700; font-family:'Fredoka',sans-serif; background:#fff; border-radius:6px; padding:0 4px; border:1.5px solid var(--sand-deep);}
   .shovelIcon{height:1.43em; vertical-align:-0.24em;}
   .inlineIcon{height:1.15em; vertical-align:-0.17em;}
+  .perfumeIcon{height:1.3225em; vertical-align:-0.2em;}
+  .fluteIcon{height:1.725em; vertical-align:-0.26em;}
+  .wk .fluteIcon{height:1.2075em;}
   .shovelIconSmall{height:11px; vertical-align:-2px;}
   .shellTag{position:absolute; bottom:1px; left:4px; font-size:9px; font-weight:700; opacity:.85; background:rgba(255,255,255,.75); border-radius:5px; padding:0 3px; z-index:4;}
   .cell.shellCell::before{
@@ -169,6 +172,24 @@
   .pirChar.p0 .bandana{background:var(--lav-deep);}
   .pirChar.p1 .bandana{background:var(--coral-deep);}
   .pirChar.p2 .bandana{background:var(--gold);}
+  /* Captain Feathers: fancy coat, plumed hat, parrot on the shoulder */
+  .pirChar.p4 .bandana{
+    background:#3A2A5C; width:22px; height:10px; border-radius:11px 11px 3px 3px; top:-2px;
+  }
+  .pirChar.p4 .bandana::before{
+    content:''; position:absolute; top:-4px; left:1px; width:5px; height:15px;
+    background:linear-gradient(180deg,#F2789A,#FDF6EA 65%,#fff);
+    border-radius:50% 50% 50% 0%; transform:rotate(-20deg); z-index:4;
+  }
+  .pirChar.p4 .torso{
+    background:linear-gradient(180deg,#3A2A5C,#2A1D42); border-color:var(--gold); border-width:2px;
+  }
+  .pirChar.p4 .torso::after{
+    content:''; position:absolute; top:-3px; right:-6px; width:8px; height:7px;
+    background:radial-gradient(circle at 35% 35%,#4CAF6B,#2E8B57); border-radius:50% 50% 50% 15%; z-index:2;
+  }
+  /* his sprite otherwise sits flush-left in the tile like other pirates; center him explicitly */
+  #pir-4{ left:50%; margin-left:-14px; }
   .pirChar.walking{animation:bob .3s ease-in-out infinite alternate;}
   .pirChar.walking .leg:first-child{animation:legA .3s ease-in-out infinite alternate;}
   .pirChar.walking .leg:last-child{animation:legB .3s ease-in-out infinite alternate;}
@@ -441,6 +462,52 @@
   }
   button#newGameBtn.goldBtn:active{transform:translateX(-50%) scale(.93) translateY(2px) !important;}
 
+  /* ---------- FAMILY REUNION SCREEN ---------- */
+  #familyScreen{
+    position:fixed; inset:0; z-index:90; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(160deg, #1B4C7A 0%, #1E5F92 30%, #2478AC 55%, #1B5C8C 80%, #123B5E 100%);
+  }
+  /* subtle moving current streaks across the background */
+  #familyScreen::before{
+    content:''; position:absolute; inset:-20%;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 40px);
+    animation:currentDrift 12s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes currentDrift{
+    0%{transform:translate(0,0);}
+    100%{transform:translate(-140px,90px);}
+  }
+  .reunionTitle{
+    position:absolute; top:6%; left:0; right:0; text-align:center; z-index:3;
+    font-family:'Fredoka',sans-serif; font-weight:700; letter-spacing:.5px;
+    font-size:clamp(22px, 6vw, 32px); color:#fff;
+    text-shadow:0 3px 0 rgba(15,60,95,.6), 0 8px 22px rgba(10,40,70,.5);
+    padding:0 8%;
+  }
+  .reunionHero{
+    position:relative; width:78%; max-width:460px; z-index:2;
+    animation:reunionBob 4.2s ease-in-out infinite;
+  }
+  .reunionHero img{width:100%; height:auto; display:block; filter:drop-shadow(0 10px 30px rgba(0,20,50,.45));}
+  @keyframes reunionBob{
+    0%,100%{transform:translateY(4px);}
+    50%    {transform:translateY(-10px);}
+  }
+  .reunionPet{
+    position:absolute; width:15%; max-width:86px; z-index:3;
+    filter:drop-shadow(0 4px 10px rgba(0,20,50,.35));
+    animation:petFloat 5s ease-in-out infinite;
+  }
+  .reunionPet.pip{ top:16%; left:7%; animation-duration:4.6s; }
+  .reunionPet.biscuit{ top:58%; right:6%; animation-duration:5.4s; animation-delay:-1.4s; width:28.125%; max-width:162px; }
+  .reunionPet.grumpycat{ bottom:10%; left:9%; animation-duration:6s; animation-delay:-2.8s; width:17.25%; max-width:99px; }
+  @keyframes petFloat{
+    0%,100%{transform:translate(0,0) rotate(-3deg);}
+    50%    {transform:translate(6px,-14px) rotate(3deg);}
+  }
+
   /* ===== MOBILE PORTRAIT LAYOUT (390x700 no-scroll target) ===== */
   :root{ --cell:min(46px, calc((100vw - 40px)/8)); --gap:3px; }
   html,body{overflow-x:hidden;}
@@ -693,6 +760,15 @@
     transform-origin:50% 18%;
     animation:jellyPulse 2.9s ease-in-out infinite, jellySway 4.3s ease-in-out infinite;
   }
+  /* ---------- SHARK (level 4) ---------- */
+  .piece.shark{
+    width:130%; height:130%; display:flex; align-items:center; justify-content:center;
+    z-index:6; pointer-events:none; transition:none;
+  }
+  .piece.shark img{
+    width:100%; height:100%; object-fit:contain;
+    filter:drop-shadow(0 3px 5px rgba(10,30,50,.45)) drop-shadow(0 0 11px rgba(255,255,255,.55));
+  }
   /* float up and down in the current */
   @keyframes jellyBob{
     0%,100%{transform:translateY(-3px);}
@@ -713,6 +789,23 @@
   @keyframes stungPulse{
     0%,100%{filter:drop-shadow(0 0 5px rgba(255,90,180,.95)) drop-shadow(0 0 14px rgba(255,140,205,.8));}
     50%    {filter:drop-shadow(0 0 12px rgba(255,60,170,1)) drop-shadow(0 0 26px rgba(255,170,220,.95)) brightness(1.2);}
+  }
+  /* carrying dried meat: slow yellow glow behind the mermaid */
+  .piece.mer.meatGlow{animation:meatPulse 1.8s ease-in-out infinite;}
+  .piece.mer.meatGlow::before{
+    content:''; position:absolute; left:50%; top:50%;
+    width:150%; height:150%; transform:translate(-50%,-50%);
+    border-radius:50%; z-index:-1; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,215,60,.9) 0%, rgba(255,225,120,.5) 45%, rgba(255,225,120,0) 75%);
+    animation:meatGlowBlob 1.8s ease-in-out infinite;
+  }
+  @keyframes meatPulse{
+    0%,100%{filter:drop-shadow(0 0 5px rgba(255,210,60,.85)) drop-shadow(0 0 12px rgba(255,225,120,.6));}
+    50%    {filter:drop-shadow(0 0 10px rgba(255,200,40,1)) drop-shadow(0 0 22px rgba(255,220,110,.85)) brightness(1.1);}
+  }
+  @keyframes meatGlowBlob{
+    0%,100%{opacity:.55; transform:translate(-50%,-50%) scale(.88);}
+    50%    {opacity:1; transform:translate(-50%,-50%) scale(1.1);}
   }
 
   /* ---------- CORAL COVE (level 2) PALETTE ---------- */
@@ -750,6 +843,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   body.pearlCove .deco.ship{filter:brightness(.55) saturate(.8);}
   /* moonlight glints on the water */
   /* moonlight glints now painted into the Pearl Cove art */
+
+  /* ---------- SEASHELL COVE (level 4) SUNRISE PALETTE ---------- */
+  body.seashellCove{
+    background:linear-gradient(180deg,
+      #FFB88C 0%, #FF9E7D 22%, #FF7E8A 46%, #E86A9A 68%, #B4569E 86%, #7C4B9E 100%) !important;
+  }
+  body.seashellCove .boardWrap{background-image:url('assets/img/bg-board-sunrise.png');}
+  body.seashellCove .boardWrap{background-position:center -36px !important; background-size:cover;}
+  body.seashellCove .laneR, body.seashellCove .laneO{background:rgba(255,220,180,.30); border-color:rgba(220,170,120,.55);}
+  body.seashellCove .cell.treesq{background:rgba(255,180,170,.32); border-color:rgba(220,140,130,.55);}
+  body.seashellCove .cell.xsquare{background:rgba(255,150,180,.36); border-color:rgba(220,110,150,.6);}
+  body.seashellCove .laneW1{background:rgba(255,190,160,.26); border-color:rgba(230,150,120,.5);}
+  body.seashellCove .laneW2{background:rgba(255,160,170,.26); border-color:rgba(225,120,140,.5);}
+  body.seashellCove .laneW3{background:rgba(230,130,175,.28); border-color:rgba(200,95,150,.55);}
+  body.seashellCove .cell .tag, body.seashellCove .shellTag{background:rgba(255,255,255,.85);}
+  body.seashellCove .deco.trees{filter:hue-rotate(-8deg) brightness(1.05) saturate(1.05);}
+  body.seashellCove .deco.ship{filter:brightness(1.02) saturate(1.05);}
 
   /* tunnel home tile */
   .cell.tunnelCell::before{
@@ -800,7 +910,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#resumeBtn.goldBtn.pressed{animation:none;}
 
   /* TEMP DEBUG BUTTON — remove before release */
-  button#debugL2.debugBtn, button#debugL3.debugBtn{
+  button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn, button#debugCaptainMsg.debugBtn, button#debugFamily.debugBtn{
     position:absolute; bottom:5%;
     font-family:'Quicksand',sans-serif; font-size:12px; font-weight:700;
     color:#3A4A55; background:rgba(255,255,255,.82); border:2px dashed #7C8B96;
@@ -809,15 +919,22 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
   button#debugL2.debugBtn{left:50%; transform:translateX(-104%);}
   button#debugL3.debugBtn{left:50%; transform:translateX(4%);}
+  button#debugL4.debugBtn{left:50%; transform:translateX(112%);}
+  button#debugCaptainMsg.debugBtn{left:50%; transform:translate(-104%,38px);}
+  button#debugFamily.debugBtn{left:50%; transform:translate(4%,38px);}
   button#debugL2.debugBtn:active{transform:translateX(-104%) scale(.93) !important;}
   button#debugL3.debugBtn:active{transform:translateX(4%) scale(.93) !important;}
-  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed{animation:none;}
+  button#debugL4.debugBtn:active{transform:translateX(112%) scale(.93) !important;}
+  button#debugCaptainMsg.debugBtn:active{transform:translate(-104%,38px) scale(.93) !important;}
+  button#debugFamily.debugBtn:active{transform:translate(4%,38px) scale(.93) !important;}
+  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed, button#debugCaptainMsg.debugBtn.pressed, button#debugFamily.debugBtn.pressed{animation:none;}
 
   /* ---------- MAGIC PEARL CARD ---------- */
   .slot.pearlSlot{position:relative; overflow:hidden;}
   /* apple pie enchantment + held ingredient cards */
   .slot.pieSlot.owned{background:linear-gradient(180deg,#FBEAD2,#F3D6A9); border:2px solid #D9A44E;}
   .pieImg{width:82%; height:auto; object-fit:contain; display:block; filter:drop-shadow(0 1px 2px rgba(120,70,20,.35));}
+  .necklaceCardIcon{height:2em; width:auto; object-fit:contain; display:block; filter:drop-shadow(0 1px 2px rgba(120,90,20,.35));}
   .slot.itemSlot{
     background:linear-gradient(180deg,#FFF4E2,#F6E3C4);
     border:2px dashed #D9A44E;
@@ -894,6 +1011,19 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   -->
   <button class="btn debugBtn" id="debugL2">🐞 Jump to Level 2</button>
   <button class="btn debugBtn" id="debugL3">🐞 Jump to Level 3</button>
+  <button class="btn debugBtn" id="debugL4">🐞 Jump to Level 4</button>
+  <button class="btn debugBtn" id="debugCaptainMsg">🐞 Jump to Captain Reveal</button>
+  <button class="btn debugBtn" id="debugFamily">🐞 Jump to Family Reunion</button>
+</div>
+
+<div id="familyScreen" class="hidden">
+  <div class="reunionTitle">You saved the whole family!</div>
+  <div class="reunionHero">
+    <img src="assets/img/mermaid_group_hug.png" alt="All five sisters reunited">
+  </div>
+  <img class="reunionPet pip" src="assets/img/pip-happy.png" alt="Pip">
+  <img class="reunionPet biscuit" src="assets/img/biscuit-happy.png" alt="Biscuit">
+  <img class="reunionPet grumpycat" src="assets/img/grumpycat-happy.png" alt="Furbles">
 </div>
 
 
@@ -1026,7 +1156,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 <script>
 (function(){
   // ---------- AUDIO ENGINE v2 (Web Audio, no files) ----------
-  let AC=null, musicGain=null, sfxGain=null, muted=false, musicTimer=null;
+  let AC=null, musicGain=null, sfxGain=null, muted=false, musicTimer=null, reunionMusicTimer=null, reunionGain=null;
   function ensureAudio(){
     if(AC) { if(AC.state==='suspended') AC.resume(); return; }
     try{
@@ -1168,6 +1298,84 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     }, 500);
   }
 
+  // Stops the shanty from scheduling further bars and fades out whatever's
+  // still ringing, so the finale chime + reunion theme can take over cleanly.
+  function stopShanty(){
+    if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
+    // A gain ramp can't fully mask bars already scheduled up to 1.5s ahead
+    // (already-committed oscillators keep producing sound on schedule
+    // regardless of how fast we ramp). Disconnecting the node is instant and
+    // total — nothing routed through it can reach the speakers anymore,
+    // no matter what's still "in flight" upstream.
+    if(musicGain){ try{ musicGain.disconnect(); }catch(e){} }
+  }
+
+  // --- Family Reunion theme: same D minor shanty modulated to D major
+  // (parallel major, Picardy-third style), ~11% quicker tempo. ---
+  const EIGHTH_MAJOR=0.2;
+  const MELODY_MAJOR=[
+    [62,2],[62,1],[66,2],[64,1],
+    [62,2],[61,1],[59,2],[57,1],
+    [57,2],[61,1],[62,2],[66,1],
+    [64,3],[62,3],
+    [66,2],[66,1],[67,2],[69,1],
+    [71,2],[69,1],[67,2],[66,1],
+    [64,2],[62,1],[61,2],[64,1],
+    [62,4],[0,2],
+  ];
+  const BARS_MAJOR=[
+    {root:50, triad:[62,66,69]}, // D
+    {root:45, triad:[57,61,64]}, // A
+    {root:47, triad:[59,62,66]}, // Bm
+    {root:43, triad:[55,59,62]}, // G
+    {root:50, triad:[62,66,69]}, // D
+    {root:43, triad:[55,59,62]}, // G
+    {root:45, triad:[57,61,64]}, // A
+    {root:50, triad:[62,66,69]}, // D
+  ];
+  function scheduleReunionLoop(t0){
+    let t=t0;
+    MELODY_MAJOR.forEach(([m,len])=>{
+      const dur=len*EIGHTH_MAJOR;
+      if(m>0) accordion(reunionGain, midiHz(m), t, dur*0.92, 0.5, 1900);
+      t+=dur;
+    });
+    BARS_MAJOR.forEach((bar,b)=>{
+      const bt=t0+b*6*EIGHTH_MAJOR;
+      tone(reunionGain, midiHz(bar.root), bt, EIGHTH_MAJOR*1.8, 'triangle', 0.85);
+      tone(reunionGain, midiHz(bar.root+7), bt+3*EIGHTH_MAJOR, EIGHTH_MAJOR*1.8, 'triangle', 0.6);
+      [2,5].forEach(e=>{
+        bar.triad.forEach(m=>accordion(reunionGain, midiHz(m), bt+e*EIGHTH_MAJOR, EIGHTH_MAJOR*0.8, 0.14, 1300));
+      });
+      tone(reunionGain, 95, bt, 0.09, 'sine', 0.5, 55);
+      [2,5].forEach(e=>noiseBurst(bt+e*EIGHTH_MAJOR, 0.045, 0.12, 4500, 9000, reunionGain));
+    });
+    return 8*6*EIGHTH_MAJOR;
+  }
+  function startReunionMusic(){
+    if(!AC) return;
+    if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
+    if(reunionMusicTimer){ clearInterval(reunionMusicTimer); reunionMusicTimer=null; }
+    // Its own gain node, freshly connected — guarantees nothing left over from
+    // the (now-disconnected) shanty graph can ever mix in here.
+    if(reunionGain){ try{ reunionGain.disconnect(); }catch(e){} }
+    reunionGain=AC.createGain();
+    reunionGain.gain.value=0.0001;
+    reunionGain.connect(AC.destination);
+    const t=AC.currentTime;
+    reunionGain.gain.linearRampToValueAtTime(0.045, t+0.9);
+    let nextT=t+0.05;
+    const loopLen=scheduleReunionLoop(nextT);
+    nextT+=loopLen;
+    reunionMusicTimer=setInterval(()=>{
+      if(muted||!AC) return;
+      while(nextT < AC.currentTime + 1.5){
+        scheduleReunionLoop(nextT);
+        nextT+=loopLen;
+      }
+    }, 500);
+  }
+
   const SFX={
     // Realistic dice: irregular clatter of small ticks + body knocks, settling at the end
     dice(){ if(!AC||muted)return;
@@ -1263,10 +1471,24 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       // fairy shimmer on top
       for(let i=0;i<10;i++) tone(sfxGain, 2200+Math.random()*2200, t+1.1+i*0.09, 0.22,'sine',0.09);
     },
+    finale(){ if(!AC||muted)return; const t=AC.currentTime;
+      // Same grand harp-cascade shape as a normal level win, modulated up a
+      // fifth and stretched into a bigger, more conclusive final chord.
+      const run=[57,60,64,69,72,76,81,84,88,93];
+      run.forEach((m,i)=>pluck(sfxGain, midiHz(m), t+i*0.095, 0.42, 2.0));
+      // final chord bloom — richer and longer, with a low root for weight
+      [45,69,76,81,85,93].forEach(m=>pluck(sfxGain, midiHz(m), t+1.15, 0.44, 3.0));
+      // fairy shimmer on top
+      for(let i=0;i<12;i++) tone(sfxGain, 2600+Math.random()*2400, t+1.2+i*0.09, 0.24,'sine',0.09);
+    },
     lose(){ if(!AC||muted)return; const t=AC.currentTime;
       [[62,0],[60,0.25],[58,0.5],[53,0.75]].forEach(([m,dt])=>tone(sfxGain, midiHz(m), t+dt, 0.42,'sawtooth',0.18));},
   };
-  window.__gameAudio={ensureAudio, SFX, setMuted(v){muted=v; if(musicGain) musicGain.gain.value=v?0:0.045;}, isMuted:()=>muted};
+  window.__gameAudio={ensureAudio, SFX, stopShanty, startReunionMusic, setMuted(v){
+    muted=v;
+    if(musicGain) musicGain.gain.value=v?0:0.045;
+    if(reunionGain) reunionGain.gain.value=v?0:0.045;
+  }, isMuted:()=>muted};
 })();
 (function(){
   // ---------- CONFIG ----------
@@ -1274,16 +1496,31 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const ROWS_DEF = ['R','O','W1','W2','W3'];
   const SHELL = {row:'W3', col:1};
   const IMG_PERFUME='assets/img/perfume-bottle.png';
-  const PERFUME_ICON='<img class="inlineIcon" src="'+IMG_PERFUME+'" alt="perfume">';
+  const PERFUME_ICON='<img class="perfumeIcon" src="'+IMG_PERFUME+'" alt="perfume">';
+  const IMG_FLUTE='assets/img/flute.png';
+  const FLUTE_ICON='<img class="fluteIcon" src="'+IMG_FLUTE+'" alt="flute">';
+  const IMG_DIAMOND='assets/img/diamond.png';
+  const DIAMOND_ICON='<img class="inlineIcon" src="'+IMG_DIAMOND+'" alt="diamond">';
+  const IMG_SHARK_NECKLACE='assets/img/shark-necklace.png';
+  const IMG_SHARK_NO_NECKLACE='assets/img/shark-no-necklace.png';
+  const IMG_DRIEDMEAT='assets/img/dried-meat.png';
+  const IMG_NECKLACE_MAGIC='assets/img/necklace-magic.png';
+  const NECKLACE_MAGIC_ICON='<img class="inlineIcon" src="'+IMG_NECKLACE_MAGIC+'" alt="magic necklace">';
+  const IMG_PLUMPIE='assets/img/plum-pie.png';
+  const IMG_PLUMPIE_INGREDIENTS='assets/img/plum-pie-ingredients.png';
   const ITEMS = {
-    necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:'💎'},
+    necklace:{item:'necklace', name:'Necklace', power:'Sparkle', emoji:DIAMOND_ICON},
     perfume: {item:'perfume',  name:'Perfume',  power:'Smell',   emoji:PERFUME_ICON},
-    flute:   {item:'flute',    name:'Flute',    power:'Music',   emoji:'🎶'},
+    flute:   {item:'flute',    name:'Flute',    power:'Music',   emoji:FLUTE_ICON},
     decoy:   {item:null,       name:'Kitchen Utensils', power:null, emoji:'🍴'},
     cannon:  {item:null,       name:'Cannonballs', power:null, emoji:'💣'},
     utensils:{item:'utensils', name:'Kitchen Utensils', power:null, emoji:'🍴'},
     ingredients:{item:'ingredients', name:'Apple Pie Ingredients', power:null, emoji:'🍎'},
     applepie:{item:'applepie', name:'Apple Pie', power:'Apple Pie', emoji:'🥧'},
+    driedmeat:{item:'driedmeat', name:'Dried Meat', power:null, emoji:'🥩'},
+    magicnecklace:{item:'magicnecklace', name:'Magic Necklace', power:'Necklace', emoji:NECKLACE_MAGIC_ICON},
+    plumingredients:{item:'plumingredients', name:'Plum Pie Ingredients', power:null, emoji:'🍇'},
+    plumpie:{item:'plumpie', name:'Plum Pie', power:'Plum Pie', emoji:'🥧'},
   };
   // 4 shuffled chest spots (costs 3/4/5/6) + 1 fixed cannonball decoy (always cost 3)
   const CHEST_SPOTS = [
@@ -1295,6 +1532,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const CANNON_SPOT = {row:'W2', col:5, cost:3};
   // Level 3 only: an extra chest holding apple pie ingredients (fixed dig cost 5)
   const INGREDIENTS_SPOT = {row:'W3', col:2, cost:5};
+  // Level 4 only: extra chests for dried meat (tames the shark) and plum pie ingredients
+  // (kept off W1, the shallowest water tier — chests never spawn there)
+  const DRIEDMEAT_SPOT = {row:'W2', col:2, cost:4};
+  const PLUM_INGREDIENTS_SPOT = {row:'W3', col:6, cost:5};
   const SLOT_ORDER=['flute','perfume','necklace'];
   const PATH = [];
   for(let c=1;c<=COLS;c++) PATH.push('O'+c);
@@ -1302,16 +1543,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const TREESQUARE='O'+COLS, XSQUARE='R1';
 
   const PIRATE_DEFS = [
-    {id:0, name:'Pirate Fitch', weakness:'Music',   item:'flute',   gull:2, emoji:'🎶', start:0},
+    {id:0, name:'Pirate Fitch', weakness:'Music',   item:'flute',   gull:2, emoji:FLUTE_ICON, start:0},
     {id:1, name:'Pirate Grum',  weakness:'Smell',   item:'perfume', gull:2, emoji:PERFUME_ICON, start:6},
-    {id:2, name:'Pirate Bobble',weakness:'Sparkle', item:'necklace',gull:2, emoji:'💎', start:11},
+    {id:2, name:'Pirate Bobble',weakness:'Sparkle', item:'necklace',gull:2, emoji:DIAMOND_ICON, start:11},
   ];
   // Level 3 adds a 4th pirate who loves apple pie (a crafted enchantment)
   const PIRATE_DEF_PIE = {id:3, name:'Pirate Crumb', weakness:'Apple Pie', item:'applepie', gull:2, emoji:'🥧', start:3};
+  // Level 4 adds a 4th pirate who loves plum pie, plus a hidden captain who only
+  // emerges once the other 4 pirates are captured (weak to the shark's magic necklace)
+  const PIRATE_DEF_PLUM = {id:3, name:'Pirate Plum', weakness:'Plum Pie', item:'plumpie', gull:2, emoji:'🥧', start:3};
+  const PIRATE_DEF_CAPTAIN = {id:4, name:'Captain Feathers', weakness:'Necklace', item:'magicnecklace', gull:2, emoji:NECKLACE_MAGIC_ICON, start:9, dormant:true, steps:5};
   function pirateDefsForLevel(){
-    return curLevel===3 ? PIRATE_DEFS.concat([PIRATE_DEF_PIE]) : PIRATE_DEFS;
+    if(curLevel===3) return PIRATE_DEFS.concat([PIRATE_DEF_PIE]);
+    if(curLevel===4) return PIRATE_DEFS.concat([PIRATE_DEF_PLUM, PIRATE_DEF_CAPTAIN]);
+    return PIRATE_DEFS;
   }
-  const WOOD_GOAL=10, PIRATE_STEPS=3;
+  const PIRATE_STEPS=3;
+  function woodGoal(){ return curLevel===4 ? 14 : 10; }
   const STEP_MS=250;
 
   // ---------- STATE ----------
@@ -1323,17 +1571,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
   function freshState(){
     const isL3 = curLevel===3;
-    // In L3 the utensils chest becomes a real keepable item (not a decoy)
-    const contents=shuffle(['necklace','perfume','flute', isL3?'utensils':'decoy']);
-    let chests=CHEST_SPOTS.map((s,i)=>({...s, key:contents[i], ...ITEMS[contents[i]], opened:false}))
-        .concat([{...CANNON_SPOT, key:'cannon', ...ITEMS.cannon, opened:false}]);
+    const isL4 = curLevel===4;
+    // In L3/L4 the utensils chest becomes a real keepable item (not a decoy)
+    const contents=shuffle(['necklace','perfume','flute', (isL3||isL4)?'utensils':'decoy']);
+    let chests=CHEST_SPOTS.map((s,i)=>({...s, key:contents[i], ...ITEMS[contents[i]], opened:false}));
+    if(!isL4) chests=chests.concat([{...CANNON_SPOT, key:'cannon', ...ITEMS.cannon, opened:false}]);
     if(isL3) chests=chests.concat([{...INGREDIENTS_SPOT, key:'ingredients', ...ITEMS.ingredients, opened:false}]);
+    if(isL4) chests=chests.concat([
+      {...DRIEDMEAT_SPOT, key:'driedmeat', ...ITEMS.driedmeat, opened:false},
+      {...PLUM_INGREDIENTS_SPOT, key:'plumingredients', ...ITEMS.plumingredients, opened:false},
+    ]);
     return {
       chests:chests,
       mer:{row:'W3', col:1},
-      inventory:{flute:false, perfume:false, necklace:false, applepie:false},
-      utensils:'none',      // 'none' | 'have'  (L3)
+      inventory:{flute:false, perfume:false, necklace:false, applepie:false, driedmeat:false, magicnecklace:false, plumpie:false},
+      utensils:'none',      // 'none' | 'have'  (L3/L4)
       ingredients:'none',   // 'none' | 'have'  (L3)
+      plumingredients:'none', // 'none' | 'have' (L4)
       pirates:pirateDefsForLevel().map(p=>({...p, pathIdx:-1, inShip:true, carrying:false, captured:false, revealed:false})),
       wood:0,
       phase:'chooseAction',
@@ -1347,12 +1601,16 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       pearl:'none',        // 'none' | 'ready' | 'used'
       jellyFrozen:false,   // jellyfish skip their next move
       extraTurn:false,
+      skipChestPrompt:false,
       pearlGiven:false,
       jellyTick:0,
       jellies:LEVELS[curLevel].jellies ? [
         {id:0, row:'W1', col:null, dir:-1, start:COLS, delay:0},
         {id:1, row:'W3', col:null, dir:+1, start:2,    delay:1},
       ] : [],
+      shark:isL4 ? {row:'W1', col:COLS, dir:-1, tierIdx:0, speed:2, active:true, onscreen:false} : null,
+      sharkFast:false,
+      captainRevealed:false,
     };
   }
 
@@ -1481,6 +1739,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const m=document.createElement('div'); m.className='piece mer'; m.id='merPiece';
     m.innerHTML='<span class="merFloat"><img class="merImg" src="'+playerImg()+'" alt="mermaid"></span>'; mc.appendChild(m);
     if(S.turnsToSkip>0) m.classList.add('stungGlow');
+    if(S.inventory.driedmeat) m.classList.add('meatGlow');
     (S.jellies||[]).forEach(j=>{
       if(j.col===null) return;
       const jc=$('cell-'+j.row+j.col); if(!jc) return;
@@ -1488,6 +1747,15 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       el.innerHTML='<img src="'+IMG_JELLY+'" alt="jellyfish">';
       jc.appendChild(el);
     });
+    if(S.shark && S.shark.active && S.shark.onscreen){
+      const sc=$('cell-'+S.shark.row+S.shark.col);
+      if(sc){
+        const el=document.createElement('div'); el.className='piece shark'; el.id='sharkPiece';
+        const sharkImg=S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE;
+        el.innerHTML='<img src="'+sharkImg+'" alt="shark" style="transform:scaleX('+(S.shark.dir===-1?-1:1)+')">';
+        sc.appendChild(el);
+      }
+    }
     if(S.dragging){
       const drag=document.createElement('div');
       drag.className='piece pirate';
@@ -1523,10 +1791,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     // Ship repair dock (left, by the ship): a log icon per delivered wood
     const rd=$('repairDock');
     let rdHtml='<h4>Repairs</h4>';
-    for(let i=0;i<WOOD_GOAL;i++){
+    for(let i=0;i<woodGoal();i++){
       rdHtml+='<div class="logIcon '+(i<S.wood?'full':'empty')+'"></div>';
     }
-    rdHtml+='<div class="count">'+S.wood+'/'+WOOD_GOAL+'</div>';
+    rdHtml+='<div class="count">'+S.wood+'/'+woodGoal()+'</div>';
     rd.innerHTML=rdHtml;
     const pl=$('pirateList'); pl.innerHTML='';
     S.pirates.forEach(p=>{
@@ -1540,17 +1808,25 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       pl.appendChild(row);
     });
     const inv=$('inv'); inv.innerHTML='';
-    const powers=[['flute','🎶','Music'],['perfume',PERFUME_ICON,'Smell'],['necklace','💎','Sparkle']];
+    const powers=[['flute',FLUTE_ICON,'Music'],['perfume',PERFUME_ICON,'Smell'],['necklace',DIAMOND_ICON,'Sparkle']];
     // Level 3: apple pie is a 4th enchantment, shown once crafted
     if(curLevel===3) powers.push(['applepie','🥧','Apple Pie']);
+    // Level 4: plum pie (crafted) and the shark's magic necklace (tamed) are extra enchantments
+    if(curLevel===4) powers.push(['plumpie','🥧','Plum Pie'], ['magicnecklace',NECKLACE_MAGIC_ICON,'Necklace']);
     powers.forEach(([k,e,label])=>{
       const s=document.createElement('div');
       const owned=S.inventory[k];
-      s.className='slot '+(owned?'owned':'locked')+(k==='applepie'?' pieSlot':'');
+      const isPie=(k==='applepie'||k==='plumpie');
+      s.className='slot '+(owned?'owned':'locked')+(isPie?' pieSlot':'');
       s.id='slot-'+k;
-      if(k==='applepie'){
+      if(isPie){
+        const pieImg=k==='plumpie'?IMG_PLUMPIE:IMG_APPLEPIE;
         s.innerHTML=owned
-          ? '<img class="pieImg" src="'+IMG_APPLEPIE+'"><span>Apple Pie</span>'
+          ? '<img class="pieImg" src="'+pieImg+'"><span>'+label+'</span>'
+          : '<span class="qBig">?</span>';
+      } else if(k==='magicnecklace'){
+        s.innerHTML=owned
+          ? '<img class="necklaceCardIcon" src="'+IMG_NECKLACE_MAGIC+'" alt="magic necklace"><span>'+label+'</span>'
           : '<span class="qBig">?</span>';
       } else {
         s.innerHTML=owned ? e+'<span>'+label+'</span>' : '<span class="qBig">?</span>';
@@ -1569,6 +1845,21 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         const g=document.createElement('div');
         g.className='slot itemSlot'; g.id='slot-ingredients';
         g.innerHTML='<img class="ingImg" src="'+IMG_INGREDIENTS+'"><span>Ingredients</span>';
+        inv.appendChild(g);
+      }
+    }
+    // Level 4 held ingredient cards (before combining)
+    if(curLevel===4){
+      if(S.utensils==='have' && !S.inventory.plumpie){
+        const u=document.createElement('div');
+        u.className='slot itemSlot'; u.id='slot-utensils';
+        u.innerHTML='<span class="itemEmoji">🍴</span><span>Utensils</span>';
+        inv.appendChild(u);
+      }
+      if(S.plumingredients==='have' && !S.inventory.plumpie){
+        const g=document.createElement('div');
+        g.className='slot itemSlot'; g.id='slot-plumingredients';
+        g.innerHTML='<img class="ingImg" src="'+IMG_PLUMPIE_INGREDIENTS+'"><span>Ingredients</span>';
         inv.appendChild(g);
       }
     }
@@ -1617,16 +1908,28 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const IMG_GRUMPYCAT='assets/img/grumpycat.png';
   const IMG_APPLEPIE='assets/img/applepie.png';
   const IMG_INGREDIENTS='assets/img/ingredients.png';
+  const IMG_SISTER5='assets/img/sister5.png';
+  const IMG_PIP_HAPPY='assets/img/pip-happy.png';
+  const IMG_BISCUIT_HAPPY='assets/img/biscuit-happy.png';
+  const IMG_GRUMPYCAT_HAPPY='assets/img/grumpycat-happy.png';
+  const IMG_GROUP_HUG='assets/img/mermaid_group_hug.png';
+  // The five sisters' names, used everywhere they're referenced by title/label.
+  const NAME_ONE='Coralie', NAME_TWO='Kailani', NAME_THREE='Skylar', NAME_FOUR='Noira', NAME_FIVE='Wisteria';
   const LEVELS={
     1:{name:'Sunset Shore', home:'shell', jellies:false},
     2:{name:'Coral Cove',   home:'tunnel', jellies:true},
     3:{name:'Pearl Cove',   home:'tunnel', jellies:false},
+    4:{name:'Seashell Cove',home:'shell', jellies:false},
   };
   const JELLY_BASE_STEPS=2, JELLY_FAST_STEPS=3;
   let curLevel=1, playerSprite=null, savedGame=null;
-  function playerImg(){ return playerSprite==='sister' ? IMG_SISTER : IMG_PLAYER; }
+  function playerImg(){
+    if(S && S.inventory && S.inventory.driedmeat) return IMG_PLAYER_DRIEDMEAT;
+    return playerSprite==='sister' ? IMG_SISTER : IMG_PLAYER;
+  }
 
   const IMG_PLAYER='assets/img/player.png';
+  const IMG_PLAYER_DRIEDMEAT='assets/img/player-driedmeat.png';
   const IMG_SISTER='assets/img/sister.png';
 
   function rollDie(){return 1+Math.floor(Math.random()*6);}
@@ -1747,6 +2050,25 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     );
   }
 
+  function combinePlumPie(){
+    S.utensils='used'; S.plumingredients='used';
+    S.inventory.plumpie=true;
+    SFX.win2 ? SFX.win2() : SFX.sparkleLove();
+    render();
+    const slot=$('slot-plumpie');
+    if(slot){ slot.classList.add('justGot'); }
+    log('🥧 You combined the ingredients and utensils into a warm plum pie!');
+    const hunter=S.pirates.find(p=>p.item==='plumpie');
+    showNotice(
+      '🥧 Plum pie baked!',
+      '<img class="popImg" src="'+IMG_PLUMPIE+'">',
+      'You baked a warm plum pie — a brand new enchantment! '+(hunter && hunter.revealed
+        ? 'Be on the lookout for '+hunter.name+', since plum pie is his weakness.'
+        : 'One of these pirates won\'t be able to resist that smell… but which one?'),
+      ()=>endPlayerAction(300)
+    );
+  }
+
   function usePearl(){
     if(S.pearl!=='ready') return;
     if(S.phase!=='chooseAction') return;   // only at start of your turn, before rolling
@@ -1768,7 +2090,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function startPlayerTurn(){
     if(S.over) return;
     S.phase='chooseAction';
-    const ch=chestAt(S.mer.row,S.mer.col);
+    const skipChest=S.skipChestPrompt; S.skipChestPrompt=false;
+    const ch=skipChest?null:chestAt(S.mer.row,S.mer.col);
     if(ch){
       $('digChoiceText').innerHTML='A mysterious treasure is buried here. You need a <b>'+ch.cost+'</b>'+(ch.cost>=6?'':' or higher')+' to dig it up and see what\'s inside — or you can swim on.';
       $('digChoiceOverlay').classList.remove('hidden');
@@ -1861,12 +2184,16 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(ch.key==='utensils'){
         S.utensils='have'; render();
         log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found kitchen utensils! 🍴');
-        if(S.ingredients==='have'){
+        const isL4=curLevel===4;
+        const otherHave=isL4 ? (S.plumingredients==='have') : (S.ingredients==='have');
+        const otherImg=isL4 ? IMG_PLUMPIE_INGREDIENTS : IMG_INGREDIENTS;
+        const pieWord=isL4 ? 'plum pie' : 'apple pie';
+        if(otherHave){
           showNotice(
             '🍴 Kitchen utensils!',
-            '<span class="popArt"><img class="popImg" src="'+IMG_INGREDIENTS+'"><span class="popPlus">+</span>🍴</span>',
-            'You already have apple pie ingredients! <b>Combine them into an apple pie?</b>',
-            ()=>combineApplePie(),
+            '<span class="popArt"><img class="popImg" src="'+otherImg+'"><span class="popPlus">+</span>🍴</span>',
+            'You already have '+pieWord+' ingredients! <b>Combine them into a '+pieWord+'?</b>',
+            isL4 ? ()=>combinePlumPie() : ()=>combineApplePie(),
             'Combine'
           );
         } else {
@@ -1899,6 +2226,39 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
             ()=>endPlayerAction(300)
           );
         }
+        return;
+      }
+      if(ch.key==='plumingredients'){
+        S.plumingredients='have'; render();
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found plum pie ingredients! 🍇');
+        if(S.utensils==='have'){
+          showNotice(
+            '🍇 Plum pie ingredients!',
+            '<span class="popArt"><img class="popImg" src="'+IMG_PLUMPIE_INGREDIENTS+'"><span class="popPlus">+</span>🍴</span>',
+            'Plums, butter, sugar and spice — and you already have kitchen utensils! <b>Combine them into a plum pie?</b>',
+            ()=>combinePlumPie(),
+            'Combine'
+          );
+        } else {
+          showNotice(
+            '🍇 Plum pie ingredients!',
+            '<img class="popImg" src="'+IMG_PLUMPIE_INGREDIENTS+'">',
+            'Plums, butter, sugar and spice! These can be combined with <b>kitchen utensils</b> to bake a plum pie.<br><br>'
+            +'<span class="stungNote">There must be some kitchen utensils somewhere — keep looking for them to use this enchantment!</span>',
+            ()=>endPlayerAction(300)
+          );
+        }
+        return;
+      }
+      if(ch.key==='driedmeat'){
+        S.inventory.driedmeat=true; render();
+        log('<img class="shovelIcon" src="assets/img/Shovel.png" alt="dig"> Rolled '+d.roll+' — you found dried meat! 🥩');
+        showNotice(
+          '🥩 Dried meat!',
+          '<img class="popImg" src="'+IMG_DRIEDMEAT+'">',
+          'A stash of dried meat — sharks can\'t resist it! Carry it out and swim right up to the shark to tame it.',
+          ()=>endPlayerAction(300)
+        );
         return;
       }
       const cellEl=$('cell-'+ch.row+ch.col);
@@ -1973,11 +2333,62 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       flashCell(S.mer.row+S.mer.col);
       hopPiece('#merPiece');
       SFX.step('mer');
+      const isFinalStep=(i===steps.length-1);
+      if(isFinalStep && checkSharkEncounter()) return;   // only the destination tile counts; chomp or tame pauses the move
       i++;
       setTimeout(doStep, STEP_MS);
     }
     if(steps.length===0){ afterMermaidMove(); return; }
     doStep();
+  }
+
+  // ---------- SHARK ENCOUNTER (Level 4) ----------
+  function checkSharkEncounter(){
+    if(curLevel!==4 || !S.shark || !S.shark.active) return false;
+    if(S.mer.row!==S.shark.row || S.mer.col!==S.shark.col) return false;
+    if(S.inventory.driedmeat){
+      distractShark(()=>{
+        S.extraTurn=true;
+        S.skipChestPrompt=true;   // even if the shark was on a chest tile, this bonus turn is escape-only
+        updateExtraBadge();
+        endPlayerAction(400);
+      });
+    } else {
+      sharkBite();
+    }
+    return true;
+  }
+
+  // Dried meat only distracts the shark for a moment — it isn't tamed or
+  // removed. You grab the necklace while he's busy, then get one bonus
+  // turn to put some distance between you before he resumes his patrol.
+  function distractShark(resumeFn){
+    S.inventory.driedmeat=false;
+    render();
+    log('🥩 You toss the shark the dried meat — he\'s distracted!');
+    showNotice(
+      '🦈 Shark distracted!',
+      '<img class="popImg" src="'+IMG_SHARK_NECKLACE+'">',
+      'The shark gobbles up the dried meat, completely distracted for a moment!',
+      ()=>{
+        S.inventory.magicnecklace=true;
+        render();
+        showNotice(
+          '✨ Magic necklace!',
+          '<img class="popImg" src="'+IMG_NECKLACE_MAGIC+'">',
+          'While he\'s busy, you slip off his <b>magic necklace</b>! This piece looks like it could win over a very special pirate…',
+          ()=>{
+            showNotice(
+              '🏃 Sneak away!',
+              '<img class="popImg" src="'+IMG_SHARK_NO_NECKLACE+'">',
+              'Quick — take one extra roll to sneak away before he notices!',
+              resumeFn,
+              "Let's go!"
+            );
+          }
+        );
+      }
+    );
   }
 
   // After the player's action: normally pirates go; but if a pearl bonus turn
@@ -1994,20 +2405,23 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function afterMermaidMove(){
     const {row,col}=S.mer;
-    const ch=chestAt(row,col);
-    if(ch){
-      log('🐚 You found a buried treasure chest!');
-      startDigRoll(ch);
-      return;
+    function proceedToChestOrEnd(){
+      const ch=chestAt(row,col);
+      if(ch){
+        log('🐚 You found a buried treasure chest!');
+        startDigRoll(ch);
+        return;
+      }
+      endPlayerAction(450);
     }
     if(row==='W1' && S.turnsToSkip===0){
       const near=S.pirates.find(p=>!p.captured && PATH[p.pathIdx]==='O'+col);
       if(near){
-        promptEnchant(near, ()=>endPlayerAction(400));
+        promptEnchant(near, proceedToChestOrEnd);
         return;
       }
     }
-    endPlayerAction(450);
+    proceedToChestOrEnd();
   }
 
   // ---------- ENCHANT PROMPT ----------
@@ -2054,12 +2468,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 
   function resolveEnchantAttempt(p){
     if(!S.inventory[p.item]){
-      const itemDef=ITEMS[p.item];
       log('💨 You try to charm '+p.name+'… but he marches on, unimpressed.');
+      const bodyText = p.item==='magicnecklace'
+        ? 'He mumbles something about his favorite necklace… stolen by a shark, if you can believe it!'
+        : 'Keep collecting treasures to increase your charms. Remember — '+p.name+' likes '+ITEMS[p.item].name.toLowerCase()+' ('+p.weakness.toLowerCase()+')!';
       showNotice(
         'Nice try! 😉',
         '💨'+p.emoji,
-        'Keep collecting treasures to increase your charms. Remember — '+p.name+' likes '+itemDef.name.toLowerCase()+' ('+p.weakness.toLowerCase()+')!',
+        bodyText,
         ()=>{
           const cont=S.pendingContinue; S.pendingContinue=null;
           cont && cont();
@@ -2160,7 +2576,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         let toRect;
         if(capEl){ capEl.style.visibility='hidden'; toRect=capEl.getBoundingClientRect(); }
         else { toRect=$('capturedDock').getBoundingClientRect(); }
-        const remaining=S.pirates.filter(x=>!x.captured).length;
+        const remaining=S.pirates.filter(x=>!x.captured && !x.dormant).length;
         flyClone(fromRect, toRect, pirateHTML(e.p,true), ()=>{
           if(capEl) capEl.style.visibility='';
           showNotice(
@@ -2207,6 +2623,19 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
                     );
                   }
                 );
+              // Level 4 twist 1: second capture speeds up the shark (skip if already tamed)
+              } else if(curLevel===4 && S.shark && S.shark.active && !S.sharkFast && capturedCount>=2){
+                S.sharkFast=true;
+                S.shark.speed=3;
+                showNotice(
+                  '🦈 Uh oh…',
+                  '<span class="popArt"><img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'"></span>',
+                  'The commotion on the beach has the shark on edge — it\'s patrolling <b>faster</b> now!',
+                  proceed
+                );
+              // Level 4 twist 2: fourth capture reveals the hidden captain
+              } else if(curLevel===4 && !S.captainRevealed && capturedCount>=4){
+                revealCaptain(proceed);
               } else {
                 proceed();
               }
@@ -2224,6 +2653,41 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     }
   });
 
+  // ---------- CAPTAIN'S ENTRANCE (Level 4) ----------
+  // Fires once all 4 regular pirates are captured: reveal popup, then the
+  // ship-exit animation. Shared by the real capture-flow trigger and the
+  // debug shortcut.
+  function revealCaptain(afterFn){
+    S.captainRevealed=true;
+    const captain=S.pirates.find(x=>x.dormant);
+    if(captain) captain.dormant=false;
+    showNotice(
+      '🏴‍☠️ Captain Feathers',
+      '<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+      '<b>"WHERE\'S MY CREW???"</b> the captain bellows from the deck. "Darn them all — I guess I\'ll just have to fix this ship myself!"<br><br>'
+      +'A fancy-dressed pirate — clearly the captain himself — emerges from the ship…',
+      ()=>{
+        if(captain){ emergeCaptain(captain, afterFn); } else { afterFn(); }
+      }
+    );
+  }
+
+  // A one-off "climbs out of the ship" animation played right after the
+  // reveal popup, before his real per-turn movement kicks in next round.
+  function emergeCaptain(captain, cb){
+    if(tileOccupied(0, captain)){ cb(); return; }
+    captain.inShip=false;
+    captain.pathIdx=0;
+    render();
+    SFX.step('pirate');
+    flashCell(PATH[0]);
+    hopPiece('#pir-'+captain.id);
+    const charEl=document.querySelector('#pir-'+captain.id+' .pirChar');
+    if(charEl) charEl.classList.add('walking');
+    log('🏴‍☠️ '+captain.name+' climbs out of the ship ⚓');
+    setTimeout(cb, STEP_MS+250);
+  }
+
   // ---------- PIRATE TURN ----------
   function tileOccupied(idx, self){
     return S.pirates.some(q=>q!==self && !q.captured && !q.inShip && q.pathIdx===idx);
@@ -2233,7 +2697,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(S.over) return;
     S.phase='pirateTurn';
     setDice('Pirates are on the move…', true);
-    const active=S.pirates.filter(p=>!p.captured);
+    const active=S.pirates.filter(p=>!p.captured && !p.dormant);
     // one new pirate leaves the ship each pirate phase (in order)
     const releasing=active.find(p=>p.inShip)||null;
     // movement order: furthest along the path moves first (like baserunners), new exit last
@@ -2244,7 +2708,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     function nextPirate(){
       if(S.over) return;
       while(pi<queue.length && queue[pi].captured) pi++;
-      if(pi>=queue.length){ setTimeout(jellyTurn,320); return; }
+      if(pi>=queue.length){ setTimeout(sharkTurn,320); return; }
       const p=queue[pi];
       if(p.inShip){
         // try to climb out onto the first path square
@@ -2256,9 +2720,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         }
         p.inShip=false;
         p.pathIdx=-1; // first step lands on PATH[0]
-        movePirate(p, PIRATE_STEPS, ['climbed out of the ship ⚓']);
+        movePirate(p, p.steps||PIRATE_STEPS, ['climbed out of the ship ⚓']);
       } else {
-        movePirate(p, PIRATE_STEPS, []);
+        movePirate(p, p.steps||PIRATE_STEPS, []);
       }
     }
 
@@ -2289,14 +2753,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(pos===XSQUARE && p.carrying){
         p.carrying=false; S.wood++;
         SFX.woodDeliver();
-        events.push('delivered wood to the ship ('+S.wood+'/'+WOOD_GOAL+') 🪵');
+        events.push('delivered wood to the ship ('+S.wood+'/'+woodGoal()+') 🪵');
       }
       render();
       flashCell(pos);
       hopPiece('#pir-'+p.id);
       const charEl=document.querySelector('#pir-'+p.id+' .pirChar');
       if(charEl) charEl.classList.add('walking');
-      if(S.wood>=WOOD_GOAL){
+      if(S.wood>=woodGoal()){
         log('🏴‍☠️ '+p.name+' '+events.join(', then ')+'.');
         endGame(false);
         return;
@@ -2304,11 +2768,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(S.mer.row==='W1' && pos==='O'+S.mer.col){
         setTimeout(()=>{
           if(S.turnsToSkip>0){
-            log('🪼 '+p.name+' passed right above you, but you\'re too stunned to sing!');
+            const isL4=curLevel===4;
+            const stunIcon=isL4?(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE):IMG_JELLY;
+            const stunCause=isL4?'shark bite':'jellyfish sting';
+            log((isL4?'🦈 ':'🪼 ')+p.name+' passed right above you, but you\'re too stunned to sing!');
             showNotice(
-              '🪼 Too stunned to sing!',
-              '<span class="popArt"><img class="popImg" src="'+IMG_JELLY+'"></span>',
-              p.name+' moved to the tile right above you — but the jellyfish sting has you frozen, so you can\'t move or enchant like this.'
+              (isL4?'🦈':'🪼')+' Too stunned to sing!',
+              '<span class="popArt"><img class="popImg" src="'+stunIcon+'"></span>',
+              p.name+' moved to the tile right above you — but the '+stunCause+' has you frozen, so you can\'t move or enchant like this.'
               +'<br><span class="stungNote">Wait until your next turn, then try to catch up to him!</span>',
               ()=>movePirate(p, stepsLeft-1, events)
             );
@@ -2359,6 +2826,109 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       else setTimeout(()=>holder.remove(),450);
     }
     requestAnimationFrame(frame);
+  }
+
+  // ---------- FAMILY REUNION CONFETTI (looping) ----------
+  // Small batches keep popping out from behind the hero image, unlike the
+  // one-shot confettiBurst() used for a normal level win.
+  let reunionConfettiTimer=null;
+  function spawnReunionConfettiBatch(){
+    const hero=document.querySelector('#familyScreen .reunionHero');
+    if(!hero) return;
+    const rect=hero.getBoundingClientRect();
+    const colors=['#9ED8D2','#F6E7A8','#F5B8AC','#C9AEDB','#E9C46A','#fff'];
+    const holder=document.createElement('div');
+    holder.style.cssText='position:fixed;inset:0;z-index:95;pointer-events:none;overflow:hidden;';
+    document.body.appendChild(holder);
+    const cx=rect.left+rect.width*(0.3+Math.random()*0.4);
+    const cy=rect.top+rect.height*0.35;
+    const parts=[];
+    for(let i=0;i<18;i++){
+      const el=document.createElement('div');
+      const size=5+Math.random()*6;
+      const round=Math.random()<0.35;
+      el.style.cssText='position:absolute;width:'+size+'px;height:'+(round?size:size*0.55)+'px;'
+        +'background:'+colors[i%colors.length]+';'
+        +(round?'border-radius:50%;':'border-radius:2px;')
+        +'left:0;top:0;will-change:transform;';
+      holder.appendChild(el);
+      const ang=Math.random()*Math.PI*2;
+      const speed=2.5+Math.random()*6;
+      parts.push({el, x:cx, y:cy,
+        vx:Math.cos(ang)*speed, vy:Math.sin(ang)*speed-6,
+        rot:Math.random()*360, vr:(Math.random()-0.5)*18});
+    }
+    const t0=performance.now();
+    function frame(now){
+      const done=now-t0>2200;
+      parts.forEach(p=>{
+        p.vy+=0.2; p.vx*=0.99;
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+        p.el.style.transform='translate('+p.x+'px,'+p.y+'px) rotate('+p.rot+'deg)';
+        if(done) p.el.style.opacity='0';
+      });
+      if(!done) requestAnimationFrame(frame);
+      else setTimeout(()=>holder.remove(),450);
+    }
+    requestAnimationFrame(frame);
+  }
+  function startReunionConfetti(){
+    stopReunionConfetti();
+    spawnReunionConfettiBatch();
+    reunionConfettiTimer=setInterval(spawnReunionConfettiBatch, 750+Math.random()*250);
+  }
+  function stopReunionConfetti(){
+    if(reunionConfettiTimer){ clearInterval(reunionConfettiTimer); reunionConfettiTimer=null; }
+  }
+
+  // ---------- SHARK TURN (Level 4) ----------
+  // Boustrophedon patrol: W1 right->left, W2 left->right, W3 right->left, repeat.
+  const SHARK_TIERS = [
+    {row:'W1', dir:-1},
+    {row:'W2', dir:+1},
+    {row:'W3', dir:-1},
+  ];
+  function sharkTurn(){
+    if(S.over) return;
+    if(curLevel!==4 || !S.shark || !S.shark.active){ jellyTurn(); return; }
+    S.shark.onscreen=true;   // hidden during the very first turn, visible from here on
+    S.phase='sharkTurn';
+    setDice('A shark is patrolling…', true);
+    let steps=0;
+    function step(){
+      if(S.over) return;
+      const sh=S.shark;
+      const nc=sh.col+sh.dir;
+      // The shell bed tile is a safe zone: the shark never enters it, treating
+      // that column as the end of the lane instead.
+      const wouldEnterShell=(sh.row===SHELL.row && nc===SHELL.col);
+      if(nc<1 || nc>COLS || wouldEnterShell){
+        sh.tierIdx=(sh.tierIdx+1)%SHARK_TIERS.length;
+        const t=SHARK_TIERS[sh.tierIdx];
+        sh.row=t.row; sh.dir=t.dir;
+        sh.col=(t.dir===-1)?COLS:1;
+      } else {
+        sh.col=nc;
+      }
+      render();
+      flashCell(sh.row+sh.col);
+      hopPiece('#sharkPiece');
+      if(checkSharkHit()) return;   // chomp pauses everything until the fail screen
+      steps++;
+      if(steps<sh.speed) setTimeout(step,300);
+      else setTimeout(jellyTurn,260);
+    }
+    step();
+  }
+
+  function checkSharkHit(){
+    const sh=S.shark;
+    if(!sh || !sh.active || S.over || S.turnsToSkip>0) return false;   // already recovering, can't be re-bitten
+    if(S.mer.row===sh.row && S.mer.col===sh.col){
+      if(S.inventory.driedmeat){ distractShark(jellyTurn); } else { sharkBite(); }
+      return true;
+    }
+    return false;
   }
 
   // ---------- JELLYFISH TURN ----------
@@ -2441,6 +3011,25 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   // ---------- END ----------
+  // ---------- SHARK BITE (Level 4) ----------
+  // Same logic as a jellyfish sting: lose a turn recovering, not game over.
+  function sharkBite(){
+    S.turnsToSkip=1;   // matches the jellyfish sting: lose exactly one full turn
+    SFX.sting();
+    render();
+    log('🦈 The shark bit you! You lose a turn recovering your nerves.');
+    const hint=S.inventory.magicnecklace
+      ? 'You\'ve already used your dried meat to distract him and grab his necklace — better swim carefully around him from now on, or he\'ll bite again!'
+      : 'Look for dried meat in one of the treasure chests — it\'ll distract him just long enough to grab his necklace and sneak away.';
+    showNotice(
+      '🦈 Ouch — shark bite!',
+      '<img class="popImg" src="'+(S.inventory.magicnecklace?IMG_SHARK_NO_NECKLACE:IMG_SHARK_NECKLACE)+'">',
+      'Stay still to recover.<br><span class="warnLine">Lose <b>1</b> turn</span><br><br>'
+      +'<b class="beginLine">'+hint+'</b>',
+      ()=>setTimeout(runSkippedTurn,200)   // same resume path as a jellyfish sting
+    );
+  }
+
   function endGame(win){
     S.over=true; S.phase='over';
     if(win){ SFX.win(); confettiBurst(); } else { SFX.lose(); }
@@ -2449,7 +3038,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(!win){
       $('endTitle').textContent='The ship sails away…';
       $('endEmoji').innerHTML='<span class="popArt"><span class="popShipArt">'+SHIP_ART+'</span><span class="popHeart">😢</span></span>';
-      $('endText').innerHTML='The pirates gathered <b>'+WOOD_GOAL+'</b> pieces of wood and fixed the ship before you could stop them. Try a bolder strategy next time!';
+      $('endText').innerHTML='The pirates gathered <b>'+woodGoal()+'</b> pieces of wood and fixed the ship before you could stop them. Try a bolder strategy next time!';
       $('restart').classList.remove('hidden'); $('restart').textContent='Play again';
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
@@ -2459,27 +3048,36 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(curLevel===1){
       savedGame={stage:'sisterMessage'};
       persistSave();
-      $('endTitle').textContent='Your sister is free!';
+      $('endTitle').textContent=NAME_TWO+' is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER+'">';
-      $('endText').innerHTML='You captured every pirate before the ship could be repaired — your sister is free!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
+      $('endText').innerHTML='You captured every pirate before the ship could be repaired — '+NAME_TWO+' is free!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
       $('restart').classList.remove('hidden'); $('restart').textContent='Hear her message';
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
     } else if(curLevel===2){
       savedGame={stage:'biscuitMessage'};
       persistSave();
-      $('endTitle').textContent='Another sister is free!';
+      $('endTitle').textContent=NAME_THREE+' is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER3+'">';
-      $('endText').innerHTML='You cleared Coral Cove and freed your sister!<br><br><b class="beginLine">But wait… Pip has a message for you.</b>';
+      $('endText').innerHTML='You cleared Coral Cove and freed '+NAME_THREE+'!<br><br><b class="beginLine">But wait… Pip has a message for you.</b>';
       $('restart').classList.remove('hidden'); $('restart').textContent="Hear Pip's message";
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
-    } else {
-      $('endTitle').textContent='Another sister is free!';
+    } else if(curLevel===3){
+      savedGame={stage:'sister4Message'};
+      persistSave();
+      $('endTitle').textContent=NAME_FOUR+' is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER4+'">';
-      $('endText').innerHTML='You cleared Pearl Cove and freed your sister!<br><br><b class="beginLine">More coves await… (To be continued!)</b>';
-      $('restart').classList.add('hidden');
+      $('endText').innerHTML='You cleared Pearl Cove and freed '+NAME_FOUR+'!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
+      $('restart').classList.remove('hidden'); $('restart').textContent='Hear her message';
       $('toMenu').classList.remove('hidden');
+      $('endOverlay').classList.remove('hidden');
+    } else {
+      $('endTitle').textContent="That's the whole family!";
+      $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER5+'">';
+      $('endText').innerHTML='Congrats — you saved '+NAME_FIVE+'! That\'s the whole family!!!';
+      $('restart').classList.remove('hidden'); $('restart').textContent='Rejoin your sisters!';
+      $('toMenu').classList.add('hidden');
       $('endOverlay').classList.remove('hidden');
     }
   }
@@ -2490,12 +3088,54 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     showNotice(
       '🌊 Pip the seahorse',
       '<span class="popArt"><img class="popImg pip" src="'+IMG_PIP+'"><img class="popImg" src="'+IMG_BISCUIT+'"></span>',
-      'I got a message from this pup — <b>Biscuit</b>! He was travelling with your sister and heard '
+      'I got a message from this pup — <b>Biscuit</b>! He was travelling with '+NAME_THREE+' and heard '
       +'there\'s another siren held on a shipwreck just one more cove over, at <b>Pearl Cove</b>. '
       +'The water there is dark as night…<br><br>'
       +'<b class="beginLine">Let\'s go save her too!</b>',
       ()=>startLevel3(),
       "Let's go!"
+    );
+  }
+
+  // ---------- SISTER FOUR'S MESSAGE (Level 3 -> 4) ----------
+  function showSister4Message(){
+    $('endOverlay').classList.add('hidden');
+    showNotice(
+      "💚 "+NAME_FOUR+"'s message",
+      '<span class="popArt"><img class="popImg" src="'+IMG_SISTER4+'"><img class="popImg" src="'+IMG_GRUMPYCAT+'"></span>',
+      'Thank you for finding me! This is my cat, <b>Furbles</b> — he heard the last mermaid is being held at '
+      +'<b>Seashell Cove</b>, and he can show you the way.<br><br>'
+      +"Just be quiet… he's still sleepy, and a little grumpy.",
+      ()=>startLevel4()
+    );
+  }
+
+  // ---------- FAMILY REUNION (Level 4 win, final screen) ----------
+  function showFamilyReunion(){
+    $('endOverlay').classList.add('hidden');
+    document.querySelector('.phone').style.display='none';
+    $('familyScreen').classList.remove('hidden');
+    AUDIO.stopShanty();
+    SFX.finale();
+    startReunionConfetti();
+    setTimeout(()=>AUDIO.startReunionMusic(), 2800);   // let the finale chime finish first
+  }
+
+  function startLevel4(){
+    playerSprite='player';
+    curLevel=4;
+    savedGame={stage:'level4'};
+    persistSave();
+    document.body.classList.remove('pearlCove');
+    document.body.classList.add('seashellCove');
+    init();
+    showNotice(
+      '🐱 Furbles the cat',
+      '<span class="popArt"><img class="popImg" src="'+IMG_GRUMPYCAT+'"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+      '(He grumbles quietly and points a paw at the wreck.) Your last sister is on that ship — capture the pirates '
+      +'and free her before they finish repairs.<br><br>'
+      +'<b class="beginLine">Roll the dice to begin!</b>',
+      ()=>startPlayerTurn()
     );
   }
 
@@ -2535,17 +3175,18 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   // Each level, once completed, rescues the sister shown here (with her pet).
   // Sisters are considered rescued in the CURRENT run when you've cleared that level.
   const SISTER_ROSTER = [
-    {level:1, name:'Sister Two',   pet:'Pip',     sisterImg:()=>IMG_SISTER,   petImg:()=>IMG_PIP},
-    {level:2, name:'Sister Three', pet:'Biscuit', sisterImg:()=>IMG_SISTER3,  petImg:()=>IMG_BISCUIT},
-    {level:3, name:'Sister Four',  pet:'Whiskers',petImg:()=>IMG_GRUMPYCAT,   sisterImg:()=>IMG_SISTER4},
+    {level:1, name:NAME_TWO,   pet:'Pip',     sisterImg:()=>IMG_SISTER,   petImg:()=>IMG_PIP},
+    {level:2, name:NAME_THREE, pet:'Biscuit', sisterImg:()=>IMG_SISTER3,  petImg:()=>IMG_BISCUIT},
+    {level:3, name:NAME_FOUR,  pet:'Furbles', petImg:()=>IMG_GRUMPYCAT,   sisterImg:()=>IMG_SISTER4},
+    {level:4, name:NAME_FIVE,  pet:null,      petImg:null,                sisterImg:()=>IMG_SISTER5},
   ];
 
   function openSisterLog(){
     SFX.popup && SFX.popup();
     // Hero: Sister 1 (the player) at the top by the title
     $('logHero').innerHTML =
-      '<img src="'+IMG_PLAYER+'" alt="Sister One">'
-      + '<div class="heroLabel">Sister One<small>You — the rescuer</small></div>';
+      '<img src="'+IMG_PLAYER+'" alt="'+NAME_ONE+'">'
+      + '<div class="heroLabel">'+NAME_ONE+'<small>You — the rescuer</small></div>';
 
     // Rescued = levels strictly before the current one in this run,
     // plus the current level if it's already been beaten.
@@ -2559,9 +3200,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       $('logList').innerHTML = rescued.map(r =>
         '<div class="logEntry">'
         + '<img src="'+r.sisterImg()+'" alt="'+r.name+'">'
-        + '<span class="pairPlus">+</span>'
-        + '<img src="'+r.petImg()+'" alt="'+r.pet+'">'
-        + '<div class="logName">'+r.name+'<small>with '+r.pet+'</small></div>'
+        + (r.pet ? '<span class="pairPlus">+</span><img src="'+r.petImg()+'" alt="'+r.pet+'">' : '')
+        + '<div class="logName">'+r.name+(r.pet ? '<small>with '+r.pet+'</small>' : '')+'</div>'
         + '</div>'
       ).join('');
     }
@@ -2576,10 +3216,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function showSisterMessage(){
     $('endOverlay').classList.add('hidden');
     showNotice(
-      "💚 Your sister's message",
+      "💚 "+NAME_TWO+"'s message",
       '<span class="popArt"><img class="popImg" src="'+IMG_SISTER+'"><img class="popImg pip" src="'+IMG_PIP+'"></span>',
       'Thank you for finding me! Take my seahorse, <b>Pip</b> — he hears everything in these waters.<br><br>'
-      +'Pip says our sister is being held on another pirate ship, the one that crashed at <b>Coral Cove</b>. '
+      +'Pip says '+NAME_THREE+' is being held on another pirate ship, the one that crashed at <b>Coral Cove</b>. '
       +'The water there is darker, and jellyfish drift through the currents… be careful.<br><br>'
       +"<b class=\"beginLine\">Let's go save her!</b>",
       ()=>startLevel2(),
@@ -2602,7 +3242,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       ()=>{
         showNotice(
           '🌊 Pip the seahorse',
-          '<span class="popArt"><img class="popImg pip" src="'+IMG_PIP+'"><img class="popImg" src="'+IMG_JELLY+'"></span>',
+          '<span class="popArt"><img class="popImg pip" src="'+IMG_PIP+'"><span class="popShipArt">'+SHIP_ART+'</span></span>',
           'Oh — and be careful! I heard there are jellyfish in these parts. Don\'t let them sting you!<br><br>'
           +'<b class="beginLine">Roll the dice to begin!</b>',
           ()=>startPlayerTurn()
@@ -2616,8 +3256,19 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(S.over && S.pirates.every(p=>p.captured)){
       if(curLevel===1){ showSisterMessage(); return; }
       if(curLevel===2){ showBiscuitMessage(); return; }
+      if(curLevel===3){ showSister4Message(); return; }
+      if(curLevel===4){ showFamilyReunion(); return; }
     }
     init();
+    if(curLevel===4){
+      showNotice(
+        '🐱 Furbles the cat',
+        '<span class="popArt"><img class="popImg" src="'+IMG_GRUMPYCAT+'"><span class="popShipArt">'+SHIP_ART+'</span></span>',
+        'Let\'s try that again — watch out for the shark this time!<br><br><b class="beginLine">Roll the dice to begin!</b>',
+        ()=>startPlayerTurn()
+      );
+      return;
+    }
     showIntro();
   });
 
@@ -2638,6 +3289,44 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     setTimeout(()=>{ m.style.display='none'; startLevel3(); }, 560);
   });
 
+  // TEMP DEBUG — remove before release
+  $('debugL4').addEventListener('click',()=>{
+    AUDIO.ensureAudio();
+    const m=$('menuScreen');
+    m.classList.add('hide');
+    setTimeout(()=>{ m.style.display='none'; startLevel4(); }, 560);
+  });
+
+  // TEMP DEBUG — remove before release
+  $('debugCaptainMsg').addEventListener('click',()=>{
+    AUDIO.ensureAudio();
+    const m=$('menuScreen');
+    m.classList.add('hide');
+    setTimeout(()=>{
+      m.style.display='none';
+      playerSprite='player';
+      curLevel=4;
+      document.body.classList.remove('coralCove','pearlCove');
+      document.body.classList.add('seashellCove');
+      init();
+      S.pirates.forEach(p=>{ if(!p.dormant) p.captured=true; });
+      S.inventory.magicnecklace=true;   // just for this debug shortcut, to test enchanting him right away
+      render();
+      revealCaptain(()=>startPlayerTurn());
+    }, 560);
+  });
+
+  // TEMP DEBUG — remove before release
+  $('debugFamily').addEventListener('click',()=>{
+    AUDIO.ensureAudio();
+    const m=$('menuScreen');
+    m.classList.add('hide');
+    setTimeout(()=>{
+      m.style.display='none';
+      showFamilyReunion();
+    }, 560);
+  });
+
   /* Resume Saved Game disabled for now
   $('resumeBtn').addEventListener('click',()=>{
     AUDIO.ensureAudio();
@@ -2646,7 +3335,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     m.classList.add('hide');
     setTimeout(()=>{
       m.style.display='none';
-      document.body.classList.remove('coralCove','pearlCove');
+      document.body.classList.remove('coralCove','pearlCove','seashellCove');
       if(savedGame.stage==='level3'){ startLevel3(); }
       else if(savedGame.stage==='biscuitMessage'){ curLevel=2; playerSprite='player'; document.body.classList.add('coralCove'); init(); showBiscuitMessage(); }
       else if(savedGame.stage==='level2'){ startLevel2(); }
@@ -2658,7 +3347,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   $('toMenu').addEventListener('click',()=>{
     $('endOverlay').classList.add('hidden');
     curLevel=1; playerSprite=null;
-    document.body.classList.remove('coralCove','pearlCove');
+    document.body.classList.remove('coralCove','pearlCove','seashellCove');
     init(); // reset the board behind the menu
     const m=$('menuScreen');
     m.style.display='';
@@ -2694,7 +3383,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   $('newGameBtn').addEventListener('click',()=>{
     AUDIO.ensureAudio(); // start the shanty right now, inside this tap
     curLevel=1; playerSprite=null;
-    document.body.classList.remove('coralCove','pearlCove');
+    document.body.classList.remove('coralCove','pearlCove','seashellCove');
     init();
     const m=$('menuScreen');
     m.classList.add('hide');
