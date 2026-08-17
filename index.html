@@ -1299,7 +1299,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   }
 
   // Stops the shanty from scheduling further bars and fades out whatever's
-  // still ringing, so the fanfare + reunion theme can take over cleanly.
+  // still ringing, so the finale chime + reunion theme can take over cleanly.
   function stopShanty(){
     if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
     if(musicGain && AC){
@@ -1308,7 +1308,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       musicGain.gain.setValueAtTime(musicGain.gain.value, t);
       // Quick duck rather than a leisurely fade — bars already scheduled up to
       // 1.5s ahead can't be un-scheduled, so cutting fast is what actually
-      // stops them from audibly bleeding into the fanfare/reunion theme.
+      // stops them from audibly bleeding into the finale chime/reunion theme.
       musicGain.gain.linearRampToValueAtTime(0.0001, t+0.12);
     }
   }
@@ -1470,15 +1470,15 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       // fairy shimmer on top
       for(let i=0;i<10;i++) tone(sfxGain, 2200+Math.random()*2200, t+1.1+i*0.09, 0.22,'sine',0.09);
     },
-    fanfare(){ if(!AC||muted)return; const t=AC.currentTime;
-      // happy trumpet-ish announcement: "da-da-da-DAA!"
-      const notes=[60,60,60,72], durs=[0.16,0.16,0.16,0.95];
-      let cursor=0;
-      notes.forEach((m,i)=>{
-        tone(sfxGain, midiHz(m), t+cursor, durs[i], 'sawtooth', i===3?0.24:0.19, null, 2600);
-        cursor+=durs[i]*0.85;
-      });
-      for(let i=0;i<5;i++) tone(sfxGain, 2600+Math.random()*1400, t+cursor-0.1+i*0.07, 0.25,'sine',0.06);
+    finale(){ if(!AC||muted)return; const t=AC.currentTime;
+      // Same grand harp-cascade shape as a normal level win, modulated up a
+      // fifth and stretched into a bigger, more conclusive final chord.
+      const run=[57,60,64,69,72,76,81,84,88,93];
+      run.forEach((m,i)=>pluck(sfxGain, midiHz(m), t+i*0.095, 0.42, 2.0));
+      // final chord bloom — richer and longer, with a low root for weight
+      [45,69,76,81,85,93].forEach(m=>pluck(sfxGain, midiHz(m), t+1.15, 0.44, 3.0));
+      // fairy shimmer on top
+      for(let i=0;i<12;i++) tone(sfxGain, 2600+Math.random()*2400, t+1.2+i*0.09, 0.24,'sine',0.09);
     },
     lose(){ if(!AC||muted)return; const t=AC.currentTime;
       [[62,0],[60,0.25],[58,0.5],[53,0.75]].forEach(([m,dt])=>tone(sfxGain, midiHz(m), t+dt, 0.42,'sawtooth',0.18));},
@@ -3111,9 +3111,9 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     document.querySelector('.phone').style.display='none';
     $('familyScreen').classList.remove('hidden');
     AUDIO.stopShanty();
-    SFX.fanfare();
+    SFX.finale();
     startReunionConfetti();
-    setTimeout(()=>AUDIO.startReunionMusic(), 1600);   // let the fanfare finish first
+    setTimeout(()=>AUDIO.startReunionMusic(), 2800);   // let the finale chime finish first
   }
 
   function startLevel4(){
