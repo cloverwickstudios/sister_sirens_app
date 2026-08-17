@@ -1306,7 +1306,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       const t=AC.currentTime;
       musicGain.gain.cancelScheduledValues(t);
       musicGain.gain.setValueAtTime(musicGain.gain.value, t);
-      musicGain.gain.linearRampToValueAtTime(0.0001, t+0.6);
+      // Quick duck rather than a leisurely fade — bars already scheduled up to
+      // 1.5s ahead can't be un-scheduled, so cutting fast is what actually
+      // stops them from audibly bleeding into the fanfare/reunion theme.
+      musicGain.gain.linearRampToValueAtTime(0.0001, t+0.12);
     }
   }
 
