@@ -462,6 +462,52 @@
   }
   button#newGameBtn.goldBtn:active{transform:translateX(-50%) scale(.93) translateY(2px) !important;}
 
+  /* ---------- FAMILY REUNION SCREEN ---------- */
+  #familyScreen{
+    position:fixed; inset:0; z-index:90; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(160deg, #1B4C7A 0%, #1E5F92 30%, #2478AC 55%, #1B5C8C 80%, #123B5E 100%);
+  }
+  /* subtle moving current streaks across the background */
+  #familyScreen::before{
+    content:''; position:absolute; inset:-20%;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 40px);
+    animation:currentDrift 12s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes currentDrift{
+    0%{transform:translate(0,0);}
+    100%{transform:translate(-140px,90px);}
+  }
+  .reunionTitle{
+    position:absolute; top:6%; left:0; right:0; text-align:center; z-index:3;
+    font-family:'Fredoka',sans-serif; font-weight:700; letter-spacing:.5px;
+    font-size:clamp(22px, 6vw, 32px); color:#fff;
+    text-shadow:0 3px 0 rgba(15,60,95,.6), 0 8px 22px rgba(10,40,70,.5);
+    padding:0 8%;
+  }
+  .reunionHero{
+    position:relative; width:78%; max-width:460px; z-index:2;
+    animation:reunionBob 4.2s ease-in-out infinite;
+  }
+  .reunionHero img{width:100%; height:auto; display:block; filter:drop-shadow(0 10px 30px rgba(0,20,50,.45));}
+  @keyframes reunionBob{
+    0%,100%{transform:translateY(4px);}
+    50%    {transform:translateY(-10px);}
+  }
+  .reunionPet{
+    position:absolute; width:15%; max-width:86px; z-index:3;
+    filter:drop-shadow(0 4px 10px rgba(0,20,50,.35));
+    animation:petFloat 5s ease-in-out infinite;
+  }
+  .reunionPet.pip{ top:16%; left:7%; animation-duration:4.6s; }
+  .reunionPet.biscuit{ top:58%; right:6%; animation-duration:5.4s; animation-delay:-1.4s; }
+  .reunionPet.grumpycat{ bottom:10%; left:9%; animation-duration:6s; animation-delay:-2.8s; }
+  @keyframes petFloat{
+    0%,100%{transform:translate(0,0) rotate(-3deg);}
+    50%    {transform:translate(6px,-14px) rotate(3deg);}
+  }
+
   /* ===== MOBILE PORTRAIT LAYOUT (390x700 no-scroll target) ===== */
   :root{ --cell:min(46px, calc((100vw - 40px)/8)); --gap:3px; }
   html,body{overflow-x:hidden;}
@@ -864,7 +910,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#resumeBtn.goldBtn.pressed{animation:none;}
 
   /* TEMP DEBUG BUTTON — remove before release */
-  button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn, button#debugCaptainMsg.debugBtn{
+  button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn, button#debugCaptainMsg.debugBtn, button#debugFamily.debugBtn{
     position:absolute; bottom:5%;
     font-family:'Quicksand',sans-serif; font-size:12px; font-weight:700;
     color:#3A4A55; background:rgba(255,255,255,.82); border:2px dashed #7C8B96;
@@ -874,12 +920,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#debugL2.debugBtn{left:50%; transform:translateX(-104%);}
   button#debugL3.debugBtn{left:50%; transform:translateX(4%);}
   button#debugL4.debugBtn{left:50%; transform:translateX(112%);}
-  button#debugCaptainMsg.debugBtn{left:50%; transform:translate(-50%,38px);}
+  button#debugCaptainMsg.debugBtn{left:50%; transform:translate(-104%,38px);}
+  button#debugFamily.debugBtn{left:50%; transform:translate(4%,38px);}
   button#debugL2.debugBtn:active{transform:translateX(-104%) scale(.93) !important;}
   button#debugL3.debugBtn:active{transform:translateX(4%) scale(.93) !important;}
   button#debugL4.debugBtn:active{transform:translateX(112%) scale(.93) !important;}
-  button#debugCaptainMsg.debugBtn:active{transform:translate(-50%,38px) scale(.93) !important;}
-  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed, button#debugCaptainMsg.debugBtn.pressed{animation:none;}
+  button#debugCaptainMsg.debugBtn:active{transform:translate(-104%,38px) scale(.93) !important;}
+  button#debugFamily.debugBtn:active{transform:translate(4%,38px) scale(.93) !important;}
+  button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed, button#debugCaptainMsg.debugBtn.pressed, button#debugFamily.debugBtn.pressed{animation:none;}
 
   /* ---------- MAGIC PEARL CARD ---------- */
   .slot.pearlSlot{position:relative; overflow:hidden;}
@@ -965,6 +1013,17 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   <button class="btn debugBtn" id="debugL3">🐞 Jump to Level 3</button>
   <button class="btn debugBtn" id="debugL4">🐞 Jump to Level 4</button>
   <button class="btn debugBtn" id="debugCaptainMsg">🐞 Jump to Captain Reveal</button>
+  <button class="btn debugBtn" id="debugFamily">🐞 Jump to Family Reunion</button>
+</div>
+
+<div id="familyScreen" class="hidden">
+  <div class="reunionTitle">You saved the whole family!</div>
+  <div class="reunionHero">
+    <img src="assets/img/mermaid_group_hug.png" alt="All five sisters reunited">
+  </div>
+  <img class="reunionPet pip" src="assets/img/pip-happy.png" alt="Pip">
+  <img class="reunionPet biscuit" src="assets/img/biscuit-happy.png" alt="Biscuit">
+  <img class="reunionPet grumpycat" src="assets/img/grumpycat-happy.png" alt="Furbles">
 </div>
 
 
@@ -1333,6 +1392,16 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       [62,69,74,78,86].forEach(m=>pluck(sfxGain, midiHz(m), t+1.05, 0.42, 2.4));
       // fairy shimmer on top
       for(let i=0;i<10;i++) tone(sfxGain, 2200+Math.random()*2200, t+1.1+i*0.09, 0.22,'sine',0.09);
+    },
+    fanfare(){ if(!AC||muted)return; const t=AC.currentTime;
+      // happy trumpet-ish announcement: "da-da-da-DAA!"
+      const notes=[60,60,60,72], durs=[0.16,0.16,0.16,0.95];
+      let cursor=0;
+      notes.forEach((m,i)=>{
+        tone(sfxGain, midiHz(m), t+cursor, durs[i], 'sawtooth', i===3?0.24:0.19, null, 2600);
+        cursor+=durs[i]*0.85;
+      });
+      for(let i=0;i<5;i++) tone(sfxGain, 2600+Math.random()*1400, t+cursor-0.1+i*0.07, 0.25,'sine',0.06);
     },
     lose(){ if(!AC||muted)return; const t=AC.currentTime;
       [[62,0],[60,0.25],[58,0.5],[53,0.75]].forEach(([m,dt])=>tone(sfxGain, midiHz(m), t+dt, 0.42,'sawtooth',0.18));},
@@ -1757,6 +1826,13 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const IMG_GRUMPYCAT='assets/img/grumpycat.png';
   const IMG_APPLEPIE='assets/img/applepie.png';
   const IMG_INGREDIENTS='assets/img/ingredients.png';
+  const IMG_SISTER5='assets/img/sister5.png';
+  const IMG_PIP_HAPPY='assets/img/pip-happy.png';
+  const IMG_BISCUIT_HAPPY='assets/img/biscuit-happy.png';
+  const IMG_GRUMPYCAT_HAPPY='assets/img/grumpycat-happy.png';
+  const IMG_GROUP_HUG='assets/img/mermaid_group_hug.png';
+  // The five sisters' names, used everywhere they're referenced by title/label.
+  const NAME_ONE='Coralie', NAME_TWO='Kailani', NAME_THREE='Skylar', NAME_FOUR='Noira', NAME_FIVE='Wisteria';
   const LEVELS={
     1:{name:'Sunset Shore', home:'shell', jellies:false},
     2:{name:'Coral Cove',   home:'tunnel', jellies:true},
@@ -2670,6 +2746,59 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     requestAnimationFrame(frame);
   }
 
+  // ---------- FAMILY REUNION CONFETTI (looping) ----------
+  // Small batches keep popping out from behind the hero image, unlike the
+  // one-shot confettiBurst() used for a normal level win.
+  let reunionConfettiTimer=null;
+  function spawnReunionConfettiBatch(){
+    const hero=document.querySelector('#familyScreen .reunionHero');
+    if(!hero) return;
+    const rect=hero.getBoundingClientRect();
+    const colors=['#9ED8D2','#F6E7A8','#F5B8AC','#C9AEDB','#E9C46A','#fff'];
+    const holder=document.createElement('div');
+    holder.style.cssText='position:fixed;inset:0;z-index:95;pointer-events:none;overflow:hidden;';
+    document.body.appendChild(holder);
+    const cx=rect.left+rect.width*(0.3+Math.random()*0.4);
+    const cy=rect.top+rect.height*0.35;
+    const parts=[];
+    for(let i=0;i<18;i++){
+      const el=document.createElement('div');
+      const size=5+Math.random()*6;
+      const round=Math.random()<0.35;
+      el.style.cssText='position:absolute;width:'+size+'px;height:'+(round?size:size*0.55)+'px;'
+        +'background:'+colors[i%colors.length]+';'
+        +(round?'border-radius:50%;':'border-radius:2px;')
+        +'left:0;top:0;will-change:transform;';
+      holder.appendChild(el);
+      const ang=Math.random()*Math.PI*2;
+      const speed=2.5+Math.random()*6;
+      parts.push({el, x:cx, y:cy,
+        vx:Math.cos(ang)*speed, vy:Math.sin(ang)*speed-6,
+        rot:Math.random()*360, vr:(Math.random()-0.5)*18});
+    }
+    const t0=performance.now();
+    function frame(now){
+      const done=now-t0>2200;
+      parts.forEach(p=>{
+        p.vy+=0.2; p.vx*=0.99;
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+        p.el.style.transform='translate('+p.x+'px,'+p.y+'px) rotate('+p.rot+'deg)';
+        if(done) p.el.style.opacity='0';
+      });
+      if(!done) requestAnimationFrame(frame);
+      else setTimeout(()=>holder.remove(),450);
+    }
+    requestAnimationFrame(frame);
+  }
+  function startReunionConfetti(){
+    stopReunionConfetti();
+    spawnReunionConfettiBatch();
+    reunionConfettiTimer=setInterval(spawnReunionConfettiBatch, 750+Math.random()*250);
+  }
+  function stopReunionConfetti(){
+    if(reunionConfettiTimer){ clearInterval(reunionConfettiTimer); reunionConfettiTimer=null; }
+  }
+
   // ---------- SHARK TURN (Level 4) ----------
   // Boustrophedon patrol: W1 right->left, W2 left->right, W3 right->left, repeat.
   const SHARK_TIERS = [
@@ -2837,28 +2966,35 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(curLevel===1){
       savedGame={stage:'sisterMessage'};
       persistSave();
-      $('endTitle').textContent='Your sister is free!';
+      $('endTitle').textContent=NAME_TWO+' is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER+'">';
-      $('endText').innerHTML='You captured every pirate before the ship could be repaired — your sister is free!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
+      $('endText').innerHTML='You captured every pirate before the ship could be repaired — '+NAME_TWO+' is free!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
       $('restart').classList.remove('hidden'); $('restart').textContent='Hear her message';
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
     } else if(curLevel===2){
       savedGame={stage:'biscuitMessage'};
       persistSave();
-      $('endTitle').textContent='Another sister is free!';
+      $('endTitle').textContent=NAME_THREE+' is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER3+'">';
-      $('endText').innerHTML='You cleared Coral Cove and freed your sister!<br><br><b class="beginLine">But wait… Pip has a message for you.</b>';
+      $('endText').innerHTML='You cleared Coral Cove and freed '+NAME_THREE+'!<br><br><b class="beginLine">But wait… Pip has a message for you.</b>';
       $('restart').classList.remove('hidden'); $('restart').textContent="Hear Pip's message";
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
-    } else {
+    } else if(curLevel===3){
       savedGame={stage:'sister4Message'};
       persistSave();
-      $('endTitle').textContent='Another sister is free!';
+      $('endTitle').textContent=NAME_FOUR+' is free!';
       $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER4+'">';
-      $('endText').innerHTML='You cleared Pearl Cove and freed your sister!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
+      $('endText').innerHTML='You cleared Pearl Cove and freed '+NAME_FOUR+'!<br><br><b class="beginLine">But wait… she has a message for you.</b>';
       $('restart').classList.remove('hidden'); $('restart').textContent='Hear her message';
+      $('toMenu').classList.remove('hidden');
+      $('endOverlay').classList.remove('hidden');
+    } else {
+      $('endTitle').textContent="That's the whole family!";
+      $('endEmoji').innerHTML='<img class="popImg" src="'+playerImg()+'"><span class="popHeart">💕</span><img class="popImg" src="'+IMG_SISTER5+'">';
+      $('endText').innerHTML='Congrats — you saved '+NAME_FIVE+'! That\'s the whole family!!!';
+      $('restart').classList.remove('hidden'); $('restart').textContent='Rejoin your sisters!';
       $('toMenu').classList.remove('hidden');
       $('endOverlay').classList.remove('hidden');
     }
@@ -2870,7 +3006,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     showNotice(
       '🌊 Pip the seahorse',
       '<span class="popArt"><img class="popImg pip" src="'+IMG_PIP+'"><img class="popImg" src="'+IMG_BISCUIT+'"></span>',
-      'I got a message from this pup — <b>Biscuit</b>! He was travelling with your sister and heard '
+      'I got a message from this pup — <b>Biscuit</b>! He was travelling with '+NAME_THREE+' and heard '
       +'there\'s another siren held on a shipwreck just one more cove over, at <b>Pearl Cove</b>. '
       +'The water there is dark as night…<br><br>'
       +'<b class="beginLine">Let\'s go save her too!</b>',
@@ -2883,13 +3019,22 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function showSister4Message(){
     $('endOverlay').classList.add('hidden');
     showNotice(
-      "💚 Sister Four's message",
+      "💚 "+NAME_FOUR+"'s message",
       '<span class="popArt"><img class="popImg" src="'+IMG_SISTER4+'"><img class="popImg" src="'+IMG_GRUMPYCAT+'"></span>',
       'Thank you for finding me! This is my cat, <b>Furbles</b> — he heard the last mermaid is being held at '
       +'<b>Seashell Cove</b>, and he can show you the way.<br><br>'
       +"Just be quiet… he's still sleepy, and a little grumpy.",
       ()=>startLevel4()
     );
+  }
+
+  // ---------- FAMILY REUNION (Level 4 win, final screen) ----------
+  function showFamilyReunion(){
+    $('endOverlay').classList.add('hidden');
+    document.querySelector('.phone').style.display='none';
+    $('familyScreen').classList.remove('hidden');
+    SFX.fanfare();
+    startReunionConfetti();
   }
 
   function startLevel4(){
@@ -2946,17 +3091,18 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   // Each level, once completed, rescues the sister shown here (with her pet).
   // Sisters are considered rescued in the CURRENT run when you've cleared that level.
   const SISTER_ROSTER = [
-    {level:1, name:'Sister Two',   pet:'Pip',     sisterImg:()=>IMG_SISTER,   petImg:()=>IMG_PIP},
-    {level:2, name:'Sister Three', pet:'Biscuit', sisterImg:()=>IMG_SISTER3,  petImg:()=>IMG_BISCUIT},
-    {level:3, name:'Sister Four',  pet:'Furbles', petImg:()=>IMG_GRUMPYCAT,   sisterImg:()=>IMG_SISTER4},
+    {level:1, name:NAME_TWO,   pet:'Pip',     sisterImg:()=>IMG_SISTER,   petImg:()=>IMG_PIP},
+    {level:2, name:NAME_THREE, pet:'Biscuit', sisterImg:()=>IMG_SISTER3,  petImg:()=>IMG_BISCUIT},
+    {level:3, name:NAME_FOUR,  pet:'Furbles', petImg:()=>IMG_GRUMPYCAT,   sisterImg:()=>IMG_SISTER4},
+    {level:4, name:NAME_FIVE,  pet:null,      petImg:null,                sisterImg:()=>IMG_SISTER5},
   ];
 
   function openSisterLog(){
     SFX.popup && SFX.popup();
     // Hero: Sister 1 (the player) at the top by the title
     $('logHero').innerHTML =
-      '<img src="'+IMG_PLAYER+'" alt="Sister One">'
-      + '<div class="heroLabel">Sister One<small>You — the rescuer</small></div>';
+      '<img src="'+IMG_PLAYER+'" alt="'+NAME_ONE+'">'
+      + '<div class="heroLabel">'+NAME_ONE+'<small>You — the rescuer</small></div>';
 
     // Rescued = levels strictly before the current one in this run,
     // plus the current level if it's already been beaten.
@@ -2970,9 +3116,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       $('logList').innerHTML = rescued.map(r =>
         '<div class="logEntry">'
         + '<img src="'+r.sisterImg()+'" alt="'+r.name+'">'
-        + '<span class="pairPlus">+</span>'
-        + '<img src="'+r.petImg()+'" alt="'+r.pet+'">'
-        + '<div class="logName">'+r.name+'<small>with '+r.pet+'</small></div>'
+        + (r.pet ? '<span class="pairPlus">+</span><img src="'+r.petImg()+'" alt="'+r.pet+'">' : '')
+        + '<div class="logName">'+r.name+(r.pet ? '<small>with '+r.pet+'</small>' : '')+'</div>'
         + '</div>'
       ).join('');
     }
@@ -2987,10 +3132,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   function showSisterMessage(){
     $('endOverlay').classList.add('hidden');
     showNotice(
-      "💚 Your sister's message",
+      "💚 "+NAME_TWO+"'s message",
       '<span class="popArt"><img class="popImg" src="'+IMG_SISTER+'"><img class="popImg pip" src="'+IMG_PIP+'"></span>',
       'Thank you for finding me! Take my seahorse, <b>Pip</b> — he hears everything in these waters.<br><br>'
-      +'Pip says our sister is being held on another pirate ship, the one that crashed at <b>Coral Cove</b>. '
+      +'Pip says '+NAME_THREE+' is being held on another pirate ship, the one that crashed at <b>Coral Cove</b>. '
       +'The water there is darker, and jellyfish drift through the currents… be careful.<br><br>'
       +"<b class=\"beginLine\">Let's go save her!</b>",
       ()=>startLevel2(),
@@ -3028,6 +3173,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(curLevel===1){ showSisterMessage(); return; }
       if(curLevel===2){ showBiscuitMessage(); return; }
       if(curLevel===3){ showSister4Message(); return; }
+      if(curLevel===4){ showFamilyReunion(); return; }
     }
     init();
     if(curLevel===4){
@@ -3083,6 +3229,17 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       S.inventory.magicnecklace=true;   // just for this debug shortcut, to test enchanting him right away
       render();
       revealCaptain(()=>startPlayerTurn());
+    }, 560);
+  });
+
+  // TEMP DEBUG — remove before release
+  $('debugFamily').addEventListener('click',()=>{
+    AUDIO.ensureAudio();
+    const m=$('menuScreen');
+    m.classList.add('hide');
+    setTimeout(()=>{
+      m.style.display='none';
+      showFamilyReunion();
     }, 560);
   });
 
