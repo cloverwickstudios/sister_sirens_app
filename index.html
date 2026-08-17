@@ -1156,7 +1156,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
 <script>
 (function(){
   // ---------- AUDIO ENGINE v2 (Web Audio, no files) ----------
-  let AC=null, musicGain=null, sfxGain=null, muted=false, musicTimer=null, reunionMusicTimer=null;
+  let AC=null, musicGain=null, sfxGain=null, muted=false, musicTimer=null, reunionMusicTimer=null, reunionGain=null;
   function ensureAudio(){
     if(AC) { if(AC.state==='suspended') AC.resume(); return; }
     try{
@@ -1302,15 +1302,12 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   // still ringing, so the finale chime + reunion theme can take over cleanly.
   function stopShanty(){
     if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
-    if(musicGain && AC){
-      const t=AC.currentTime;
-      musicGain.gain.cancelScheduledValues(t);
-      musicGain.gain.setValueAtTime(musicGain.gain.value, t);
-      // Quick duck rather than a leisurely fade — bars already scheduled up to
-      // 1.5s ahead can't be un-scheduled, so cutting fast is what actually
-      // stops them from audibly bleeding into the finale chime/reunion theme.
-      musicGain.gain.linearRampToValueAtTime(0.0001, t+0.12);
-    }
+    // A gain ramp can't fully mask bars already scheduled up to 1.5s ahead
+    // (already-committed oscillators keep producing sound on schedule
+    // regardless of how fast we ramp). Disconnecting the node is instant and
+    // total — nothing routed through it can reach the speakers anymore,
+    // no matter what's still "in flight" upstream.
+    if(musicGain){ try{ musicGain.disconnect(); }catch(e){} }
   }
 
   // --- Family Reunion theme: same D minor shanty modulated to D major
@@ -1340,18 +1337,18 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     let t=t0;
     MELODY_MAJOR.forEach(([m,len])=>{
       const dur=len*EIGHTH_MAJOR;
-      if(m>0) accordion(musicGain, midiHz(m), t, dur*0.92, 0.5, 1900);
+      if(m>0) accordion(reunionGain, midiHz(m), t, dur*0.92, 0.5, 1900);
       t+=dur;
     });
     BARS_MAJOR.forEach((bar,b)=>{
       const bt=t0+b*6*EIGHTH_MAJOR;
-      tone(musicGain, midiHz(bar.root), bt, EIGHTH_MAJOR*1.8, 'triangle', 0.85);
-      tone(musicGain, midiHz(bar.root+7), bt+3*EIGHTH_MAJOR, EIGHTH_MAJOR*1.8, 'triangle', 0.6);
+      tone(reunionGain, midiHz(bar.root), bt, EIGHTH_MAJOR*1.8, 'triangle', 0.85);
+      tone(reunionGain, midiHz(bar.root+7), bt+3*EIGHTH_MAJOR, EIGHTH_MAJOR*1.8, 'triangle', 0.6);
       [2,5].forEach(e=>{
-        bar.triad.forEach(m=>accordion(musicGain, midiHz(m), bt+e*EIGHTH_MAJOR, EIGHTH_MAJOR*0.8, 0.14, 1300));
+        bar.triad.forEach(m=>accordion(reunionGain, midiHz(m), bt+e*EIGHTH_MAJOR, EIGHTH_MAJOR*0.8, 0.14, 1300));
       });
-      tone(musicGain, 95, bt, 0.09, 'sine', 0.5, 55);
-      [2,5].forEach(e=>noiseBurst(bt+e*EIGHTH_MAJOR, 0.045, 0.12, 4500, 9000, musicGain));
+      tone(reunionGain, 95, bt, 0.09, 'sine', 0.5, 55);
+      [2,5].forEach(e=>noiseBurst(bt+e*EIGHTH_MAJOR, 0.045, 0.12, 4500, 9000, reunionGain));
     });
     return 8*6*EIGHTH_MAJOR;
   }
@@ -1359,10 +1356,14 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     if(!AC) return;
     if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
     if(reunionMusicTimer){ clearInterval(reunionMusicTimer); reunionMusicTimer=null; }
+    // Its own gain node, freshly connected — guarantees nothing left over from
+    // the (now-disconnected) shanty graph can ever mix in here.
+    if(reunionGain){ try{ reunionGain.disconnect(); }catch(e){} }
+    reunionGain=AC.createGain();
+    reunionGain.gain.value=0.0001;
+    reunionGain.connect(AC.destination);
     const t=AC.currentTime;
-    musicGain.gain.cancelScheduledValues(t);
-    musicGain.gain.setValueAtTime(0.0001, t);
-    musicGain.gain.linearRampToValueAtTime(0.045, t+0.4);
+    reunionGain.gain.linearRampToValueAtTime(0.045, t+0.9);
     let nextT=t+0.05;
     const loopLen=scheduleReunionLoop(nextT);
     nextT+=loopLen;
@@ -1483,7 +1484,11 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     lose(){ if(!AC||muted)return; const t=AC.currentTime;
       [[62,0],[60,0.25],[58,0.5],[53,0.75]].forEach(([m,dt])=>tone(sfxGain, midiHz(m), t+dt, 0.42,'sawtooth',0.18));},
   };
-  window.__gameAudio={ensureAudio, SFX, stopShanty, startReunionMusic, setMuted(v){muted=v; if(musicGain) musicGain.gain.value=v?0:0.045;}, isMuted:()=>muted};
+  window.__gameAudio={ensureAudio, SFX, stopShanty, startReunionMusic, setMuted(v){
+    muted=v;
+    if(musicGain) musicGain.gain.value=v?0:0.045;
+    if(reunionGain) reunionGain.gain.value=v?0:0.045;
+  }, isMuted:()=>muted};
 })();
 (function(){
   // ---------- CONFIG ----------
