@@ -935,7 +935,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#resumeBtn.goldBtn:active{transform:translateX(-50%) scale(.93) translateY(2px) !important;}
   button#resumeBtn.goldBtn.pressed{animation:none;}
 
-  /* MENU SHORTCUT BUTTON (TEMP DEBUG) — commented out, not deleted
+  /* TEMP DEBUG BUTTON — remove before release */
   button#debugL2.debugBtn, button#debugL3.debugBtn, button#debugL4.debugBtn, button#debugCaptainMsg.debugBtn, button#debugFamily.debugBtn{
     position:absolute; bottom:5%;
     font-family:'Quicksand',sans-serif; font-size:12px; font-weight:700;
@@ -954,7 +954,6 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   button#debugCaptainMsg.debugBtn:active{transform:translate(-104%,38px) scale(.93) !important;}
   button#debugFamily.debugBtn:active{transform:translate(4%,38px) scale(.93) !important;}
   button#debugL2.debugBtn.pressed, button#debugL3.debugBtn.pressed, button#debugL4.debugBtn.pressed, button#debugCaptainMsg.debugBtn.pressed, button#debugFamily.debugBtn.pressed{animation:none;}
-  */
 
   /* ---------- MAGIC PEARL CARD ---------- */
   .slot.pearlSlot{position:relative; overflow:hidden;}
@@ -1036,13 +1035,11 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   <!-- Resume feature disabled for now
   <button class="btn goldBtn resumeBtn" id="resumeBtn">Resume Saved Game</button>
   -->
-  <!-- MENU SHORTCUTS DISABLED — commented out, not deleted
   <button class="btn debugBtn" id="debugL2">🐞 Jump to Level 2</button>
   <button class="btn debugBtn" id="debugL3">🐞 Jump to Level 3</button>
   <button class="btn debugBtn" id="debugL4">🐞 Jump to Level 4</button>
   <button class="btn debugBtn" id="debugCaptainMsg">🐞 Jump to Captain Reveal</button>
   <button class="btn debugBtn" id="debugFamily">🐞 Jump to Family Reunion</button>
-  -->
 </div>
 
 <div id="familyScreen" class="hidden">
@@ -3288,9 +3285,6 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   });
 
 
-  /* MENU SHORTCUTS DISABLED — commented out, not deleted, so they're easy to
-     bring back later. See matching commented-out HTML (search debugBtn) and
-     CSS (search "MENU SHORTCUT BUTTON") blocks.
   // TEMP DEBUG — remove before release
   $('debugL2').addEventListener('click',()=>{
     AUDIO.ensureAudio();
@@ -3344,7 +3338,6 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       showFamilyReunion();
     }, 560);
   });
-  */
 
   /* Resume Saved Game disabled for now
   $('resumeBtn').addEventListener('click',()=>{
