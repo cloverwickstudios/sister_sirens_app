@@ -1850,9 +1850,17 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       s.id='slot-'+k;
       if(isPie){
         const pieImg=k==='plumpie'?IMG_PLUMPIE:IMG_APPLEPIE;
-        s.innerHTML=owned
-          ? '<img class="pieImg" src="'+pieImg+'"><span>'+label+'</span>'
-          : '<span class="qBig">?</span>';
+        const ingredientsHave=k==='plumpie' ? S.plumingredients==='have' : S.ingredients==='have';
+        const ingredientsImg=k==='plumpie' ? IMG_PLUMPIE_INGREDIENTS : IMG_INGREDIENTS;
+        if(owned){
+          s.innerHTML='<img class="pieImg" src="'+pieImg+'"><span>'+label+'</span>';
+        } else if(S.utensils==='have'){
+          s.innerHTML='<span class="itemEmoji">🍴</span><span>Utensils</span>';
+        } else if(ingredientsHave){
+          s.innerHTML='<img class="ingImg" src="'+ingredientsImg+'"><span>Ingredients</span>';
+        } else {
+          s.innerHTML='<span class="qBig">?</span>';
+        }
       } else if(k==='magicnecklace'){
         s.innerHTML=owned
           ? '<img class="necklaceCardIcon" src="'+IMG_NECKLACE_MAGIC+'" alt="magic necklace"><span>'+label+'</span>'
@@ -1862,36 +1870,10 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       }
       inv.appendChild(s);
     });
-    // Level 3 held ingredient cards (before combining)
-    if(curLevel===3){
-      if(S.utensils==='have' && !S.inventory.applepie){
-        const u=document.createElement('div');
-        u.className='slot itemSlot'; u.id='slot-utensils';
-        u.innerHTML='<span class="itemEmoji">🍴</span><span>Utensils</span>';
-        inv.appendChild(u);
-      }
-      if(S.ingredients==='have' && !S.inventory.applepie){
-        const g=document.createElement('div');
-        g.className='slot itemSlot'; g.id='slot-ingredients';
-        g.innerHTML='<img class="ingImg" src="'+IMG_INGREDIENTS+'"><span>Ingredients</span>';
-        inv.appendChild(g);
-      }
-    }
-    // Level 4 held ingredient cards (before combining)
-    if(curLevel===4){
-      if(S.utensils==='have' && !S.inventory.plumpie){
-        const u=document.createElement('div');
-        u.className='slot itemSlot'; u.id='slot-utensils';
-        u.innerHTML='<span class="itemEmoji">🍴</span><span>Utensils</span>';
-        inv.appendChild(u);
-      }
-      if(S.plumingredients==='have' && !S.inventory.plumpie){
-        const g=document.createElement('div');
-        g.className='slot itemSlot'; g.id='slot-plumingredients';
-        g.innerHTML='<img class="ingImg" src="'+IMG_PLUMPIE_INGREDIENTS+'"><span>Ingredients</span>';
-        inv.appendChild(g);
-      }
-    }
+    // Utensils/ingredients no longer get their own separate slots — whichever
+    // is acquired first now shows directly inside the pie slot above (see
+    // the isPie branch), so there's only ever one slot for the whole
+    // craft-a-pie sequence.
     if(S.pearl!=='none'){
       const ps=document.createElement('div');
       ps.className='slot pearlSlot '+(S.pearl==='used'?'pearlUsed':'pearlReady');
