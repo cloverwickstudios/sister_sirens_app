@@ -211,7 +211,7 @@
   .logIcon.empty::before{background:rgba(255,255,255,.35); border:1.5px dashed #C9B99B;}
   .logIcon.full{animation:popIn .3s ease;}
 
-  /* ---------- CAPTURED DOCK (below the shell bed corner, off-grid) ---------- */
+  /* ---------- CAPTURED DOCK (below the shell home corner, off-grid) ---------- */
   .capturedDock{
     position:absolute; left:56px; bottom:4px;
     display:flex; flex-direction:row; gap:8px; align-items:center;
@@ -1740,7 +1740,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
         else if(row==='O'){cell.innerHTML='<div class="arrow">▶</div>';}
         if(row===SHELL.row&&c===SHELL.col){
           if(LEVELS[curLevel].home==='tunnel'){ cell.classList.add('tunnelCell'); cell.innerHTML='<div class="shellTag">tunnel</div>'; }
-          else { cell.classList.add('shellCell'); cell.innerHTML='<div class="shellTag">shell bed</div>'; }
+          else { cell.classList.add('shellCell'); cell.innerHTML='<div class="shellTag">shell home</div>'; }
         }
         cell.addEventListener('click',()=>onCellClick(row,c));
         boardEl.appendChild(cell);
@@ -1799,7 +1799,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     });
     // captured dock
     const dock=$('capturedDock');
-    // A pirate mid-drag doesn't appear in the tank until the mermaid reaches the shell bed
+    // A pirate mid-drag doesn't appear in the tank until the mermaid reaches the shell home
     const caps=S.pirates.filter(p=>p.captured && !(S.dragging && S.dragging.id===p.id));
     if(!caps.length){
       dock.innerHTML=S.dragging ? '' :
@@ -1943,8 +1943,8 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
   const NAME_ONE='Coralie', NAME_TWO='Kailani', NAME_THREE='Skylar', NAME_FOUR='Noira', NAME_FIVE='Wisteria';
   const LEVELS={
     1:{name:'Sunset Shore', home:'shell', jellies:false},
-    2:{name:'Coral Cove',   home:'tunnel', jellies:true},
-    3:{name:'Pearl Cove',   home:'tunnel', jellies:false},
+    2:{name:'Coral Cove',   home:'shell', jellies:true},
+    3:{name:'Pearl Cove',   home:'shell', jellies:false},
     4:{name:'Seashell Cove',home:'shell', jellies:false},
   };
   const JELLY_BASE_STEPS=2, JELLY_FAST_STEPS=3;
@@ -2574,7 +2574,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     const e=S.enchant;
     S.enchant=null;
     if(e.p.captured){
-      // The mermaid drags him home: step back to the shell bed together
+      // The mermaid drags him home: step back to the shell home together
       S.mer={...e.merPos};
       S.dragging=e.p;
       const path=[];
@@ -2594,7 +2594,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
           setTimeout(dragStep, STEP_MS+40);
           return;
         }
-        // Arrived home: set him off-grid, below the shell bed corner
+        // Arrived home: set him off-grid, below the shell home corner
         S.dragging=null;
         const fromRect=$('cell-'+SHELL.row+SHELL.col).getBoundingClientRect();
         render();
@@ -2669,7 +2669,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
           );
         });
       }
-      log('🐚 You drag '+e.p.name+' home to the shell bed!');
+      log('🐚 You drag '+e.p.name+' back to your shell home!');
       setTimeout(dragStep, 300);
     } else {
       render();
@@ -2925,7 +2925,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
       if(S.over) return;
       const sh=S.shark;
       const nc=sh.col+sh.dir;
-      // The shell bed tile is a safe zone: the shark never enters it, treating
+      // The shell home tile is a safe zone: the shark never enters it, treating
       // that column as the end of the lane instead.
       const wouldEnterShell=(sh.row===SHELL.row && nc===SHELL.col);
       if(nc<1 || nc>COLS || wouldEnterShell){
@@ -3401,7 +3401,7 @@ body.pearlCove .boardWrap{background-position:center -36px !important; backgroun
     $('log').innerHTML='';
     log(curLevel===2
       ? '🪸 You slip into Coral Cove. Darker water, drifting jellyfish — and another sister to save.'
-      : '🐚 You wake in your shell bed. The crashed ship holds your sister — save her!');
+      : '🐚 You wake in your shell home. The crashed ship holds your sister — save her!');
     diceEl.innerHTML=dieQuestionHTML();
     setDice('Read the goal to begin!', true);
   }
