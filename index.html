@@ -466,7 +466,9 @@
   #familyScreen{
     position:fixed; inset:0; z-index:90; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(160deg, #1B4C7A 0%, #1E5F92 30%, #2478AC 55%, #1B5C8C 80%, #123B5E 100%);
+    background:
+      linear-gradient(180deg, rgba(10,30,55,.35) 0%, rgba(10,30,55,.05) 25%, rgba(10,30,55,.18) 100%),
+      url('assets/img/family-reunion-bg.png') center/cover no-repeat;
   }
   /* subtle moving current streaks across the background */
   /* soft drifting caustic-light patches, like sunlight shimmering through water */
@@ -514,6 +516,7 @@
   }
   .reunionHero{
     position:relative; width:78%; max-width:460px; z-index:2;
+    margin-top:6%;
     animation:reunionBob 4.2s ease-in-out infinite;
   }
   .reunionHero img{width:100%; height:auto; display:block; filter:drop-shadow(0 10px 30px rgba(0,20,50,.45));}
@@ -526,9 +529,10 @@
     filter:drop-shadow(0 4px 10px rgba(0,20,50,.35));
     animation:petFloat 5s ease-in-out infinite;
   }
-  .reunionPet.pip{ top:16%; left:7%; animation-duration:4.6s; }
-  .reunionPet.biscuit{ top:58%; right:6%; animation-duration:5.4s; animation-delay:-1.4s; width:28.125%; max-width:162px; }
-  .reunionPet.grumpycat{ bottom:10%; left:9%; animation-duration:6s; animation-delay:-2.8s; width:17.25%; max-width:99px; }
+  .reunionPet.pip{ top:22%; left:16%; animation-duration:4.6s; }
+  .reunionPet.pip img{ transform:scaleX(-1); }
+  .reunionPet.biscuit{ top:60%; right:6%; animation-duration:5.4s; animation-delay:-1.4s; width:28.125%; max-width:162px; }
+  .reunionPet.grumpycat{ bottom:16%; left:18%; animation-duration:6s; animation-delay:-2.8s; width:17.25%; max-width:99px; }
   @keyframes petFloat{
     0%,100%{transform:translate(0,0) rotate(-3deg);}
     50%    {transform:translate(6px,-14px) rotate(3deg);}
